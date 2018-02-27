@@ -5,6 +5,7 @@
     'name': 'Purchase Request',
     'version': '1.0',
     'category': 'Purchases',
+    'author':'tung.tung11191@gmail.com',
     'description': """
 Use Purchase Request module for requesting product.
     """,
