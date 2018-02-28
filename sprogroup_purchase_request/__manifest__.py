@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 {
-    'name': 'Request Purchase Product',
+    'name': 'Purchase Request',
     'version': '1.0',
     'category': 'Purchases',
     'author':'tung.tung11191@gmail.com',
@@ -11,8 +11,8 @@ Use Purchase Request module for requesting product.
     """,
     'summary': 'Create purchase request',
     'website': 'https://www.odoo.com/page/survey',
+    'images': ['static/description/icon.png'],
     'depends': ['mail', 'website'],
-	'images': ['static/description/icon.jpg'],
     'data': [
         'data/sprogroup_purchase_request_data.xml',
         'security/sprogroup_purchase_request_security.xml',
