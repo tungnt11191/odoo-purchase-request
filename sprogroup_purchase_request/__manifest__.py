@@ -11,7 +11,7 @@ Use Purchase Request module for requesting product.
     """,
     'summary': 'Create purchase request',
     'website': 'https://www.odoo.com/page/survey',
-    'images': ['static/description/icon.png'],
+    'images': ['static/description/icon.jpg'],
     'depends': ['mail', 'website'],
     'data': [
         'data/sprogroup_purchase_request_data.xml',
