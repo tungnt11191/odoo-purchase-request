@@ -84,8 +84,6 @@ class SprogroupPurchaseRequest(models.Model):
     @api.one
     @api.depends('requested_by')
     def _compute_department(self):
-        self.department_id = 2
-        return
         if (self.requested_by.id == False):
             self.department_id = None
             return
