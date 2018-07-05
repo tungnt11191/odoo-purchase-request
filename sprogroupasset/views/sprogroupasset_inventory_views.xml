@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="sprogroupasset_inventory_view_form" model="ir.ui.view">
+        <field name="name">sprogroupasset.inventory.form</field>
+        <field name="model">sprogroupasset.inventory</field>
+        <field name="arch" type="xml">
+            <form string="Inventory">
+
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" string="Subject"/>
+                        <h1>
+                            <field name="name" placeholder="Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                             <field name="user_id" />
+                            <field name="category_id" />
+                            <field name="use_in_location" />
+                        </group>
+                        <group>
+                             <field name="start_date" />
+                            <field name="end_date" />
+                        </group>
+                    </group>
+
+
+                    <notebook>
+                        <page string="Description">
+                            <field name='description' type="html"/>
+                        </page>
+                        <page string="Equipment">
+                            <button name="load_equipment" type="object" string="Load" />
+                            <field name="equipment_rel_ids">
+                                <tree string="Equipment line" editable="bottom">
+                                    <field name="equipment_id"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="sprogroupasset_inventory_view_tree" model="ir.ui.view">
+        <field name="name">sprogroupasset.inventory.tree</field>
+        <field name="model">sprogroupasset.inventory</field>
+        <field name="arch" type="xml">
+            <tree string="sprogroupasset inventory">
+                <field name="name"/>
+                <field name="user_id" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="inventory_status_da_kiem_ke" />
+                <field name="inventory_status_chua_kiem_ke" />
+                <field name="inventory_status_du" />
+                <field name="inventory_status_thieu" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- equiment.request : actions -->
+    <record id="sprogroupasset_inventory_action" model="ir.actions.act_window">
+        <field name="name">sprogroupasset inventory</field>
+        <field name="res_model">sprogroupasset.inventory</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to add a new sprogroupasset inventory.
+            </p>
+        </field>
+    </record>
+
+     <menuitem
+            id="menu_sprogroupasset_inventory"
+            name="Inventory"
+            parent="menu_sprogroupasset_title"
+            action="sprogroupasset_inventory_action"
+            groups="group_sprogroupasset_manager"
+            sequence="5" />
+
+</odoo>

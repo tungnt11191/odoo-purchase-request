@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Standard stages for Asset Request -->
+        <record id="stage_0" model="sprogroupasset.stage">
+            <field name="name">New Request</field>
+            <field name="sequence" eval="1" />
+            <field name="fold" eval="False" />
+        </record>
+        <record id="stage_1" model="sprogroupasset.stage">
+            <field name="name">Requested</field>
+            <field name="sequence" eval="2" />
+            <field name="fold" eval="False" />
+        </record>
+        <record id="stage_3" model="sprogroupasset.stage">
+            <field name="name">Returned Asset</field>
+            <field name="sequence" eval="3" />
+            <field name="fold" eval="False" />
+            <field name="done" eval="True" />
+        </record>
+
+        <!--borrow stage-->
+        <!-- Standard stages for Asset Request -->
+        <record id="borrow_stage_0" model="sprogroupasset.borrow.stage">
+            <field name="name">New Request</field>
+            <field name="sequence" eval="1" />
+            <field name="fold" eval="False" />
+            <field name="borrow_state">new</field>
+        </record>
+        <record id="borrow_stage_1" model="sprogroupasset.borrow.stage">
+            <field name="name">Requested</field>
+            <field name="sequence" eval="2" />
+            <field name="fold" eval="False" />
+            <field name="borrow_state">requested</field>
+        </record>
+        <record id="borrow_stage_3" model="sprogroupasset.borrow.stage">
+            <field name="name">Approved</field>
+            <field name="sequence" eval="3" />
+            <field name="fold" eval="False" />
+            <field name="done" eval="True" />
+            <field name="borrow_state">approved</field>
+        </record>
+        <record id="borrow_stage_4" model="sprogroupasset.borrow.stage">
+            <field name="name">Rejected</field>
+            <field name="sequence" eval="4" />
+            <field name="fold" eval="False" />
+            <field name="done" eval="True" />
+            <field name="borrow_state">rejected</field>
+        </record>
+
+        <record id="borrow_stage_5" model="sprogroupasset.borrow.stage">
+            <field name="name">Returned</field>
+            <field name="sequence" eval="5" />
+            <field name="fold" eval="False" />
+            <field name="borrow_state">returned</field>
+        </record>
+
+        <!--provide stage-->
+        <!-- Standard stages for Asset Request -->
+        <record id="provide_stage_0" model="sprogroupasset.provide.stage">
+            <field name="name">New Request</field>
+            <field name="sequence" eval="1" />
+            <field name="fold" eval="False" />
+            <field name="provide_state">new</field>
+        </record>
+        <record id="provide_stage_1" model="sprogroupasset.provide.stage">
+            <field name="name">Requested</field>
+            <field name="sequence" eval="2" />
+            <field name="fold" eval="False" />
+            <field name="provide_state">requested</field>
+        </record>
+        <record id="provide_stage_3" model="sprogroupasset.provide.stage">
+            <field name="name">Approved</field>
+            <field name="sequence" eval="3" />
+            <field name="fold" eval="False" />
+            <field name="done" eval="True" />
+            <field name="provide_state">approved</field>
+        </record>
+        <record id="provide_stage_4" model="sprogroupasset.provide.stage">
+            <field name="name">Rejected</field>
+            <field name="sequence" eval="4" />
+            <field name="fold" eval="False" />
+            <field name="done" eval="True" />
+            <field name="provide_state">rejected</field>
+        </record>
+
+        <!--transfer stage-->
+        <!-- Standard stages for Asset Request -->
+        <record id="transfer_stage_0" model="sprogroupasset.transfer.stage">
+            <field name="name">New Request</field>
+            <field name="sequence" eval="1" />
+            <field name="fold" eval="False" />
+        </record>
+        <record id="transfer_stage_1" model="sprogroupasset.transfer.stage">
+            <field name="name">Requested</field>
+            <field name="sequence" eval="2" />
+            <field name="fold" eval="False" />
+        </record>
+        <record id="transfer_stage_3" model="sprogroupasset.transfer.stage">
+            <field name="name">Approved</field>
+            <field name="sequence" eval="3" />
+            <field name="fold" eval="False" />
+            <field name="done" eval="True" />
+        </record>
+        <record id="transfer_stage_4" model="sprogroupasset.transfer.stage">
+            <field name="name">Cancelled</field>
+            <field name="sequence" eval="4" />
+            <field name="fold" eval="False" />
+            <field name="done" eval="True" />
+        </record>
+
+        <!--transfer stage-->
+        <!-- Standard stages for Asset Request -->
+        <record id="request_stage_0" model="sprogroupasset.request.stage">
+            <field name="name">New Request</field>
+            <field name="sequence" eval="1" />
+            <field name="fold" eval="False" />
+        </record>
+        <record id="request_stage_1" model="sprogroupasset.request.stage">
+            <field name="name">Requested</field>
+            <field name="sequence" eval="2" />
+            <field name="fold" eval="False" />
+        </record>
+        <record id="request_stage_3" model="sprogroupasset.request.stage">
+            <field name="name">Approved</field>
+            <field name="sequence" eval="3" />
+            <field name="fold" eval="False" />
+            <field name="done" eval="True" />
+        </record>
+        <record id="request_stage_4" model="sprogroupasset.request.stage">
+            <field name="name">Cancelled</field>
+            <field name="sequence" eval="4" />
+            <field name="fold" eval="False" />
+            <field name="done" eval="True" />
+        </record>
+
+        <!-- email alias for sprogroupasset requests -->
+        <record id="mail_alias_equipment" model="mail.alias">
+            <field name="alias_name">helpdesk</field>
+            <field name="alias_model_id" ref="model_sprogroupasset_request"/>
+            <field name="alias_user_id" ref="base.user_root"/>
+        </record>
+
+        <!-- Asset Request-related subtypes for messaging / Chatter -->
+        <record id="mt_req_created" model="mail.message.subtype">
+            <field name="name">Request Created</field>
+            <field name="res_model">sprogroupasset.request</field>
+            <field name="hidden" eval="True"/>
+            <field name="description">Asset Request created</field>
+        </record>
+        <record id="mt_req_status" model="mail.message.subtype">
+            <field name="name">Status Changed</field>
+            <field name="res_model">sprogroupasset.request</field>
+            <field name="default" eval="True"/>
+            <field name="description">Status changed</field>
+        </record>
+
+        <!-- Equipment-related subtypes for messaging / Chatter -->
+        <record id="mt_mat_assign" model="mail.message.subtype">
+            <field name="name">Equipment Assigned</field>
+            <field name="res_model">sprogroupasset.equipment</field>
+            <field name="description">Equipment Assigned</field>
+        </record>
+
+        <!-- Equipment Category-related subtypes for messaging / Chatter -->
+        <record id="mt_cat_req_created" model="mail.message.subtype">
+            <field name="name">Asset Request Created</field>
+            <field name="res_model">sprogroupasset.equipment.category</field>
+            <field name="default" eval="True"/>
+            <field name="parent_id" eval="ref('mt_req_created')"/>
+            <field name="relation_field">category_id</field>
+        </record>
+        <record id="mt_cat_mat_assign" model="mail.message.subtype">
+            <field name="name">Equipment Assigned</field>
+            <field name="res_model">sprogroupasset.equipment.category</field>
+            <field name="default" eval="True"/>
+            <field name="parent_id" eval="ref('mt_mat_assign')"/>
+            <field name="relation_field">category_id</field>
+        </record>
+        <record id="equipment_team_sprogroupasset" model="sprogroupasset.team">
+            <field name="name">Internal Asset</field>
+        </record>
+
+       <!-- Equipment categories -->
+        <record id="equipment_computer" model="sprogroupasset.equipment.category">
+            <field name="name">Computers</field>
+            <field name="alias_id" ref="mail_alias_equipment"/>
+        </record>
+        <record id="equipment_software" model="sprogroupasset.equipment.category">
+            <field name="name">Software</field>
+            <field name="alias_id" ref="mail_alias_equipment"/>
+        </record>
+        <record id="equipment_printer" model="sprogroupasset.equipment.category">
+            <field name="name">Printers</field>
+            <field name="alias_id" ref="mail_alias_equipment"/>
+        </record>
+        <record id="equipment_monitor" model="sprogroupasset.equipment.category">
+            <field name="name">Monitors</field>
+            <field name="technician_user_id" ref="base.user_root"/>
+            <field name="color">3</field>
+            <field name="alias_id" ref="mail_alias_equipment"/>
+        </record>
+        <record id="equipment_phone" model="sprogroupasset.equipment.category">
+            <field name="name">Phones</field>
+            <field name="technician_user_id" ref="base.user_root"/>
+            <field name="alias_id" ref="mail_alias_equipment"/>
+        </record>
+
+        <record id="equipment_component_category_ram" model="sprogroupasset.equipment.component.category">
+            <field name="name">Ram</field>
+            <field name="code">ram</field>
+            <field name="sequence" eval="1" />
+        </record>
+
+        <record id="equipment_component_category_chip" model="sprogroupasset.equipment.component.category">
+            <field name="name">Chip</field>
+            <field name="code">chip</field>
+            <field name="sequence" eval="2" />
+        </record>
+
+        <record id="equipment_component_category_hdd" model="sprogroupasset.equipment.component.category">
+            <field name="name">Hdd</field>
+            <field name="code">hdd</field>
+            <field name="sequence" eval="3" />
+        </record>
+
+        <record id="mt_borrow_req_created" model="mail.message.subtype">
+            <field name="name">Request Created</field>
+            <field name="res_model">sprogroupasset.borrow.request</field>
+            <field name="hidden" eval="True"/>
+            <field name="description">Asset Borrow Request created</field>
+        </record>
+        <record id="mt_borrow_req_status" model="mail.message.subtype">
+            <field name="name">Status Changed</field>
+            <field name="res_model">sprogroupasset.borrow.request</field>
+            <field name="default" eval="True"/>
+            <field name="description">Status changed</field>
+        </record>
+        <record id="mt_provide_req_created" model="mail.message.subtype">
+            <field name="name">Request Created</field>
+            <field name="res_model">sprogroupasset.provide.request</field>
+            <field name="hidden" eval="True"/>
+            <field name="description">Asset Borrow Request created</field>
+        </record>
+        <record id="mt_provide_req_status" model="mail.message.subtype">
+            <field name="name">Status Changed</field>
+            <field name="res_model">sprogroupasset.provide.request</field>
+            <field name="default" eval="True"/>
+            <field name="description">Status changed</field>
+        </record>
+    </data>
+
+    <data >
+        <record id="mail_template_send_email_to_manager_new_equipment_create" model="mail.template">
+            <field name="name">Sprogroupasset: New equipment created</field>
+            <field name="subject">New equipment was created</field>
+            <field name="email_from">${(user.email or '')|safe}</field>
+            <field name="email_to">${(object.owner_user_id.email)|safe}</field>
+            <field name="lang">${object.owner_user_id.lang}</field>
+            <field name="model_id" ref="model_sprogroupasset_equipment"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" >
+                <![CDATA[
+                    <p>Dear,</p><p>New equipment was created with following information:</p>
+                    <ul>
+                        <li>Name: ${object.name}</li>
+                        <li>Category: ${object.category_id.name}</li>
+                        <li>Model: ${object.model}</li>
+                        <li>Code: ${object.code}</li>
+                    </ul>
+                ]]>
+            </field>
+        </record>
+
+        <record id="mail_template_sprogroupasset_mail" model="mail.template">
+            <field name="name">Sprogroupasset email template</field>
+            <field name="subject">${object.email_subject}</field>
+            <field name="email_from">${(user.email or '')|safe}</field>
+            <field name="email_to">${(object.email_to)|safe}</field>
+            <field name="lang">${user.lang}</field>
+            <field name="model_id" ref="model_sprogroupasset_mail"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" >
+                <![CDATA[
+                    <p>Dear,</p><p>New equipment was created with following information:</p>
+                    <ul>
+                        <li>Name: ${object.equipment.name}</li>
+                        <li>Category: ${object.equipment.category_id.name}</li>
+                        <li>Model: ${object.equipment.model}</li>
+                        <li>Code: ${object.equipment.code}</li>
+                    </ul>
+                ]]>
+            </field>
+        </record>
+    </data>
+
+
+</odoo>

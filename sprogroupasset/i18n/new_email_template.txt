@@ -1,0 +1,11 @@
+                    <p>Kính g?i ${object.equipment.owner_user_id.name},</p><p>B?n v?a m?i du?c bàn giao tài s?n v?i thông tin nhu sau:</p>
+                    <ul>
+                        <li>Tên Ts: ${object.equipment.name}</li>
+                        <li>Lo?i: ${object.equipment.category_id.name}</li>
+                        <li>Model: ${object.equipment.model}</li>
+                        <li>Mã: ${object.equipment.code}</li>
+                        <li>Ngày bàn giao: ${object.equipment.assign_date}</li>
+                    </ul>
+<div dir="ltr" style="font-size:13px;margin-top:0pt;margin-bottom:8pt;color:grey">
+                <span><br>-- <br>N?u có thông tin c?n th?c m?c<br>Vui lòng liên h? <b>Nguy?n Công Khánh </b></span><span>S? máy l?: 3103, ho?c email: khanhnc@tanhoangminh.com.vn</span>
+</div>
