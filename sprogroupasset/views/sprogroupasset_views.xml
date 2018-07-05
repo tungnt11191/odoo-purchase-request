@@ -978,7 +978,7 @@
     <menuitem
         id="menu_sprogroupasset_title"
         name="Asset"
-        web_icon="sprogroupasset,static/description/macbook.png"
+        web_icon="sprogroupasset,static/description/icon.png"
         sequence="110"/>
 
 

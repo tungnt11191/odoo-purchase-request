@@ -11,7 +11,7 @@
     'summary': 'Equipments Management',
     'depends': ['mail','hr'],
     'website': 'http://sprogroup.com',
-    'images': ['static/description/macbook.png'],
+    'images': ['static/description/icon.png'],
     'data': [
         'security/sprogroupasset.xml',
         'security/ir.model.access.csv',
