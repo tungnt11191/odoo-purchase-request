@@ -528,7 +528,7 @@ class SprogroupassetRequest(models.Model):
         self = self.with_context(mail_create_nolog=True)
         request = super(SprogroupassetRequest, self).create(vals)
         if request.owner_user_id:
-            request.message_subscribe_users(user_ids=[request.owner_user_id.partner_id.id])
+            request.message_subscribe(partner_ids=[request.owner_user_id.partner_id.id])
         if request.equipment_id and not request.sprogroupasset_team_id:
             request.sprogroupasset_team_id = request.equipment_id.sprogroupasset_team_id
         return request
@@ -548,7 +548,7 @@ class SprogroupassetRequest(models.Model):
             vals['kanban_state'] = 'normal'
         if vals.get('owner_user_id'):
             owner_user = self.env['res.users'].sudo().browse(vals['owner_user_id'])
-            self.message_subscribe_users(user_ids=[owner_user.partner_id.id])
+            self.message_subscribe(partner_ids=[owner_user.partner_id.id])
         res = super(SprogroupassetRequest, self).write(vals)
         if self.stage_id.done and 'stage_id' in vals:
             self.write({'close_date': fields.Date.today()})
