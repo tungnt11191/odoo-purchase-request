@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="sprogroupasset_vendor_view_form" model="ir.ui.view">
+        <field name="name">sprogroupasset.vendor.form</field>
+        <field name="model">sprogroupasset.vendor</field>
+        <field name="arch" type="xml">
+            <form string="Vendor">
+
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" string="Subject"/>
+                        <h1>
+                            <field name="name" placeholder="Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                             <field name="website" />
+                             <field name="mobile" />
+                        </group>
+                        <group>
+                             <field name="email" />
+                            <field name="address" />
+                        </group>
+                    </group>
+
+
+                    <notebook>
+                        <page string="Description">
+                            <field name='description' type="html"/>
+                        </page>
+                    </notebook>
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="sprogroupasset_vendor_view_tree" model="ir.ui.view">
+        <field name="name">sprogroupasset.vendor.tree</field>
+        <field name="model">sprogroupasset.vendor</field>
+        <field name="arch" type="xml">
+            <tree string="sprogroupasset vendor">
+                <field name="name"/>
+                <field name="email" />
+                <field name="address" />
+                <field name="website" />
+                 <field name="mobile" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- equiment.request : actions -->
+    <record id="sprogroupasset_vendor_action" model="ir.actions.act_window">
+        <field name="name">sprogroupasset vendor</field>
+        <field name="res_model">sprogroupasset.vendor</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to add a new sprogroupasset vendor.
+            </p>
+        </field>
+    </record>
+
+     <menuitem
+            id="menu_sprogroupasset_vendor"
+            name="Vendor"
+            parent="menu_sprogroupasset_title"
+            action="sprogroupasset_vendor_action"
+            groups="group_sprogroupasset_manager"
+            sequence="5" />
+
+</odoo>

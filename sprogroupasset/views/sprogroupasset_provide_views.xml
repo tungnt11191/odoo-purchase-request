@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="sprogroupasset_provide_component_view_form" model="ir.ui.view">
+        <field name="name">sprogroupasset.provide.component.form</field>
+        <field name="model">sprogroupasset.provide.component</field>
+        <field name="arch" type="xml">
+            <form string="provide components Form">
+                <sheet string="provide components">
+                    <div class="oe_title">
+                        <h1 class="o_row">
+                            <field name="name" placeholder="Tiêu đề..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="price" type="measure"/>
+                        </group>
+                        <group>
+                            <field name="provide_request_id"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page name="description_page" string="Description">
+                            <field name="description" type="html"/>
+                            <div class="oe_clear"/>
+                        </page>
+
+                    </notebook>
+                </sheet>
+
+
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="sprogroupasset_provide_component_view_tree" model="ir.ui.view">
+        <field name="name">sprogroupasset.provide.component.tree</field>
+        <field name="model">sprogroupasset.provide.component</field>
+        <field name="arch" type="xml">
+            <tree string="provide component" >
+                 <field name="name"/>
+                 <field name="price"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="sprogroupasset_provide_component_action" model="ir.actions.act_window">
+        <field name="name">provide component</field>
+        <field name="res_model">sprogroupasset.provide.component</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="sprogroupasset_provide_component_view_tree"/>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to add a new provide component.
+            </p>
+        </field>
+    </record>
+
+
+    <!-- equiment.request : views -->
+    <record id="sprogroupasset_equipment_provide_request_view_search" model="ir.ui.view">
+        <field name="name">equipment.provide.request.search</field>
+        <field name="model">sprogroupasset.provide.request</field>
+        <field name="arch" type="xml">
+            <search string="sprogroupasset Request Search">
+                <field name="name"/>
+                <field name="owner_user_id"/>
+                <field name="stage_id"/>
+                <separator/>
+                <filter string="My Requests" name="my_requests" domain="[('owner_user_id', '=', uid)]" readonly = "1"/>
+                <separator/>
+                <filter string="Canceled" name="inactive" domain="[('archive','=',True)]"/>
+                <group  expand='0' string='Group by...'>
+                    <filter string='Stages' name="stages" domain="[]" context="{'group_by' : 'stage_id'}"/>
+                    <filter string='Created By' name='created_by' domain="[]" context="{'group_by': 'owner_user_id'}" readonly = "1"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="sprogroupasset_equipment_provide_request_view_form" model="ir.ui.view">
+        <field name="name">equipment.provide.request.form</field>
+        <field name="model">sprogroupasset.provide.request</field>
+        <field name="arch" type="xml">
+            <form string="Asset Request">
+                <header>
+                    <span attrs="{'invisible': [('current_stage_provide_state' , 'in' ,['approved' , 'rejected' ,'returned'] )]}">
+                        <button string="Cancel" name="archive_equipment_request" type="object" attrs="{'invisible': [('archive', '=', True) ]}"/>
+                        <button string="Reopen Request" name="reset_equipment_request" type="object" attrs="{'invisible': [('archive', '=', False)]}"/>
+                    </span>
+                    <field name="stage_id" widget="statusbar" clickable="true" readonly="1" attrs="{'invisible': [('archive', '=', True)]}"/>
+                    <field name="current_stage_provide_state" invisible="1"/>
+                </header>
+
+                <sheet>
+                    <div attrs="{'invisible': [('archive', '=', False)]}">
+                        <span class="label label-warning pull-right">Canceled</span>
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" string="Subject"/>
+                        <h1>
+                            <field name="name" placeholder="Asset Subject" attrs="{'readonly': [('current_stage_provide_state' , 'in' ,['requested','approved' , 'rejected' ,'returned'] )]}"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="owner_user_id" string="Requested By" attrs="{'readonly': True}"/>
+                            <field name="archive" invisible="1"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                        <group>
+                            <field name="start_date" attrs="{'readonly': [('current_stage_provide_state' , 'in' ,['requested','approved' , 'rejected' ,'returned'] )]}"/>
+                             <field name="end_date" attrs="{'readonly': [('current_stage_provide_state' , 'in' ,['requested','approved' , 'rejected' ,'returned'] )]}"/>
+                        </group>
+                    </group>
+
+
+                    <div id="attachment-box">
+                        <p class="at-box-title">Attachment</p>
+                        <field name="attachment_ids" widget="many2many_binary" />
+                    </div>
+                    <notebook>
+                        <page string="Description">
+                            <field name='description' placeholder="Internal Note ......."/>
+                        </page>
+                        <page string="Component">
+                            <field name="provide_component_ids">
+                                <tree string="Component line" >
+                                    <field name="name"/>
+                                    <field name="price" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Miscellaneous">
+                            <group>
+                                <group>
+                                    <field name="request_date"/>
+                                    <field name="approved_date" />
+                                    <field name="rejected_date"/>
+                                </group>
+                                <group>
+                                   <field name="create_uid" readonly="1"/>
+                                   <field name="approved_user_id"/>
+                                   <field name="rejected_user_id"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="sprogroupasset_equipment_provide_request_view_kanban" model="ir.ui.view">
+        <field name="name">equipment.provide.request.kanban</field>
+        <field name="model">sprogroupasset.provide.request</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" quick_create="false">
+                <field name="stage_id"/>
+                <field name="color"/>
+                <field name="priority"/>
+                <field name="owner_user_id"/>
+                <field name="archive"/>
+                <field name="message_needaction_counter"/>
+                <templates>
+                     <t t-name="kanban-tooltip">
+                       <ul class="oe_kanban_tooltip">
+                          <li><b>Own:</b> <field name="owner_user_id"/></li>
+                       </ul>
+                    </t>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click oe_semantic_html_override">
+                            <div class="o_dropdown_kanban dropdown">
+
+                                <a class="dropdown-toggle btn" data-toggle="dropdown" href="#" >
+                                    <span class="fa fa-bars fa-lg"/>
+                                </a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <t t-if="widget.editable"><li><a type="edit">Edit...</a></li></t>
+                                    <t t-if="widget.deletable"><li><a type="delete">Delete</a></li></t>
+                                    <li><ul class="oe_kanban_colorpicker" data-field="color"/></li>
+                                </ul>
+                            </div>
+                            <div class="oe_kanban_content" tooltip="kanban-tooltip">
+                                <div>
+                                    <b><field name="name"/></b> <br/>
+                                    <span name="owner_user_id" t-if="record.owner_user_id.raw_value"><field name="owner_user_id"/><br/></span>
+                                </div>
+                                <div class="oe_kanban_footer_left" style="margin-top:2px;">
+                                    <t t-if="record.message_needaction_counter.raw_value">
+                                        <span class='oe_kanban_mail_new' title='Unread Messages'><i class='fa fa-comments'/><t t-raw="record.message_needaction_counter.raw_value"/></span>
+                                    </t>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <img t-att-src="kanban_image('res.users', 'image_small', record.owner_user_id.raw_value)" t-att-title="record.owner_user_id.value" width="24" height="24" class="oe_kanban_avatar pull-right"/>
+                                    <div class="pull-left" groups="base.group_user">
+                                       <field name="priority" widget="priority"/>
+                                    </div>
+                                </div>
+                                <div class="oe_kanban_footer_left mt4 label label-danger" t-if="record.archive.raw_value">
+                                    Cancel
+                                </div>
+                            </div>
+                            <div class="oe_clear"></div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="sprogroupasset_equipment_provide_request_view_tree" model="ir.ui.view">
+        <field name="name">equipment.provide.request.tree</field>
+        <field name="model">sprogroupasset.provide.request</field>
+        <field name="arch" type="xml">
+            <tree string="sprogroupasset Request" decoration-bf="message_needaction==True">
+                <field name="message_needaction" invisible="1"/>
+                <field name="request_date" />
+                <field name="owner_user_id"/>
+                <field name="name"/>
+                <field name="stage_id"/>
+                <field name="archive" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- equiment.request : actions -->
+    <record id="sprogroupasset_equipment_provide_request_action" model="ir.actions.act_window">
+        <field name="name">Asset Provide Requests</field>
+        <field name="res_model">sprogroupasset.provide.request</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="sprogroupasset_equipment_provide_request_view_kanban"/>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to add a new sprogroupasset request.
+            </p>
+        </field>
+    </record>
+
+    <!-- equipment.stage : views -->
+    <record id="sprogroupasset_equipment_provide_stage_view_search" model="ir.ui.view">
+        <field name="name">equipment.provide.stage.search</field>
+        <field name="model">sprogroupasset.provide.stage</field>
+        <field name="arch" type="xml">
+            <search string="Asset Request Stages">
+               <field name="name" string="Asset Request Stages"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="sprogroupasset_equipment_provide_stage_view_tree" model="ir.ui.view">
+        <field name="name">equipment.provide.stage.tree</field>
+        <field name="model">sprogroupasset.provide.stage</field>
+        <field name="arch" type="xml">
+            <tree string="Asset Request Stage" editable="top">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="fold"/>
+                <field name="done"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- equipment.stages : actions -->
+    <record id="sprogroupasset_equipment_provide_stage_action" model="ir.actions.act_window">
+        <field name="name">Stages</field>
+        <field name="res_model">sprogroupasset.provide.stage</field>
+        <field name="view_mode">tree</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="sprogroupasset_equipment_provide_stage_view_tree"/>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to add a stage in the sprogroupasset request.
+          </p>
+        </field>
+    </record>
+
+    <record id="sprogroupasset_equipment_provide_request_action_from_equipment" model="ir.actions.act_window">
+        <field name="name">Asset Provide Requests</field>
+        <field name="res_model">sprogroupasset.provide.request</field>
+        <field name="src_model">sprogroupasset.equipment</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('owner_user_id', '=', uid)]</field>
+    </record>
+
+
+</odoo>

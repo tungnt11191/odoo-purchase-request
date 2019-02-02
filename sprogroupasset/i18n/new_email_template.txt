@@ -1,0 +1,11 @@
+                    <p>K�nh g?i ${object.equipment.owner_user_id.name},</p><p>B?n v?a m?i du?c b�n giao t�i s?n v?i th�ng tin nhu sau:</p>
+                    <ul>
+                        <li>T�n Ts: ${object.equipment.name}</li>
+                        <li>Lo?i: ${object.equipment.category_id.name}</li>
+                        <li>Model: ${object.equipment.model}</li>
+                        <li>M�: ${object.equipment.code}</li>
+                        <li>Ng�y b�n giao: ${object.equipment.assign_date}</li>
+                    </ul>
+<div dir="ltr" style="font-size:13px;margin-top:0pt;margin-bottom:8pt;color:grey">
+                <span><br>-- <br>N?u c� th�ng tin c?n th?c m?c<br>Vui l�ng li�n h? <b>Nguy?n C�ng Kh�nh </b></span><span>S? m�y l?: 3103, ho?c email: khanhnc@tanhoangminh.com.vn</span>
+</div>
