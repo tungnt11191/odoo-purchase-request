@@ -3,7 +3,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl-3.0).
 
 from odoo import api, fields, models, _ , SUPERUSER_ID
-import odoo.addons.decimal_precision as dp
+from odoo.addons import decimal_precision as dp
 from datetime import datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 _STATES = [
@@ -31,12 +31,8 @@ class SprogroupPurchaseRequest(models.Model):
     def _get_default_name(self):
         return self.env['ir.sequence'].next_by_code('sprogroup.purchase.request')
 
-    name = fields.Char('Request Name', size=32, required=True,
-                       track_visibility='onchange')
-
-    code = fields.Char('Code', size=32, required=True,
-                       default=_get_default_name,
-                       track_visibility='onchange')
+    name = fields.Char('Request Name', size=32, required=True, track_visibility='onchange')
+    code = fields.Char('Code', size=32, required=True, default=_get_default_name, track_visibility='onchange')
     date_start = fields.Date('Start date',
                              help="Date when the user initiated the request.",
                              default=fields.Date.context_today,
@@ -84,8 +80,6 @@ class SprogroupPurchaseRequest(models.Model):
     @api.one
     @api.depends('requested_by')
     def _compute_department(self):
-        self.department_id = 2
-        return
         if (self.requested_by.id == False):
             self.department_id = None
             return
@@ -147,7 +141,7 @@ class SprogroupPurchaseRequest(models.Model):
     def create(self, vals):
         request = super(SprogroupPurchaseRequest, self).create(vals)
         if vals.get('assigned_to'):
-            request.message_subscribe_users(user_ids=[request.assigned_to.id])
+            request.message_subscribe(partner_ids=[request.assigned_to.partner_id.id])
         return request
 
     @api.multi
@@ -155,7 +149,7 @@ class SprogroupPurchaseRequest(models.Model):
         res = super(SprogroupPurchaseRequest, self).write(vals)
         for request in self:
             if vals.get('assigned_to'):
-                self.message_subscribe_users(user_ids=[request.assigned_to.id])
+                self.message_subscribe(partner_ids=[request.assigned_to.partner_id.id])
         return res
 
     @api.multi
@@ -279,9 +273,7 @@ class SprogroupPurchaseRequestLine(models.Model):
                        track_visibility='onchange')
     product_uom_id = fields.Many2one('product.uom', 'Product Unit of Measure',
                                      track_visibility='onchange')
-    product_qty = fields.Float('Quantity', track_visibility='onchange',
-                               digits=dp.get_precision(
-                                   'Product Unit of Measure'))
+    product_qty = fields.Float(string='Quantity', track_visibility='onchange', digits=dp.get_precision('Product Unit of Measure'))
     request_id = fields.Many2one('sprogroup.purchase.request',
                                  'Purchase Request',
                                  ondelete='cascade', readonly=True)

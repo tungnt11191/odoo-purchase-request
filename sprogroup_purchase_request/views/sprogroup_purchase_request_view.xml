@@ -8,142 +8,141 @@
             <field name="model">sprogroup.purchase.request</field>
             <field name="arch" type="xml">
                 <form string="Purchase Request" version="7.0">
-                <header>
-                    <button name="button_draft"
-                            states="to_approve,leader_approved,manager_approved,rejected,done"
-                            string="Reset"
-                            type="object"
-                            groups="sprogroup_purchase_request.group_sprogroup_purchase_request_manager"/>
-                    <button name="button_to_approve" states="draft"
-                            string="Request approval" type="object"
-                            class="oe_highlight"/>
-                    <button name="button_leader_approved"
-                            string="Leader Approve"
-                            type="object"
-                            class="oe_highlight"
-                            groups="base.group_user"
-                            attrs="{'invisible': [('can_leader_approved', '=', False)]}"/>
-                    <button name="button_manager_approved"
-                            states="leader_approved"
-                            string="Manager Approve"
-                            type="object"
-                            class="oe_highlight"
+                    <header>
+                        <button name="button_draft"
+                                states="to_approve,leader_approved,manager_approved,rejected,done"
+                                string="Reset"
+                                type="object"
+                                groups="sprogroup_purchase_request.group_sprogroup_purchase_request_manager"/>
+                        <button name="button_to_approve" states="draft"
+                                string="Request approval" type="object"
+                                class="oe_highlight"/>
+                        <button name="button_leader_approved"
+                                string="Leader Approve"
+                                type="object"
+                                class="oe_highlight"
+                                groups="base.group_user"
+                                attrs="{'invisible': [('can_leader_approved', '=', False)]}"/>
+                        <button name="button_manager_approved"
+                                states="leader_approved"
+                                string="Manager Approve"
+                                type="object"
+                                class="oe_highlight"
+                                groups="sprogroup_purchase_request.group_sprogroup_purchase_request_manager"
+                        />
+                        <button name="button_done"
+                                states="manager_approved"
+                                string="Done"
+                                type="object"
+                                class="oe_highlight"
+                                groups="sprogroup_purchase_request.group_sprogroup_purchase_request_manager"/>
+                        <button name="button_rejected"
+                                string="Reject"
+                                type="object"
+                                attrs="{'invisible': [('can_reject', '=', False)]}"
+                        />
+
+                        <button string="New Quotation" states="done" name="make_purchase_quotation" type="object"
                             groups="sprogroup_purchase_request.group_sprogroup_purchase_request_manager"
-                    />
-                    <button name="button_done"
-                            states="manager_approved"
-                            string="Done"
-                            type="object"
-                            class="oe_highlight"
-                            groups="sprogroup_purchase_request.group_sprogroup_purchase_request_manager"/>
-                    <button name="button_rejected"
-                            string="Reject"
-                            type="object"
-                            attrs="{'invisible': [('can_reject', '=', False)]}"
-                    />
+                        />
 
-                    <button string="New Quotation" states="done" name="make_purchase_quotation" type="object"
-                        context="{'default_product_ids': line_ids}"
-                        groups="sprogroup_purchase_request.group_sprogroup_purchase_request_manager"
-                    />
-
-                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,to_approve,leader_approved,manager_approved,done,rejected"
-                           statusbar_colors='{"manager_approved":"blue"}'/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,to_approve,leader_approved,manager_approved,done,rejected"
+                               statusbar_colors='{"manager_approved":"blue"}'/>
 
 
-                </header>
-                <sheet>
-                    <field name="is_editable" invisible="1"/>
-                    <div class="oe_edit_only">
-                        <label for="name" class="oe_inline"/>
-                    </div>
-                    <h1>
-                        <field name="name" class="oe_inline" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        <label string="-"/>
-                        <field name="code" class="oe_inline" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                    </h1>
-                    <group>
+                    </header>
+                    <sheet>
+                        <field name="is_editable" invisible="1"/>
+                        <div class="oe_edit_only">
+                            <label for="name" class="oe_inline"/>
+                        </div>
+                        <h1>
+                            <field name="name" class="oe_inline" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                            <label for="space" name="Space" string="-"/>
+                            <field name="code" class="oe_inline" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        </h1>
                         <group>
-                            <field name="can_leader_approved" invisible="1"/>
-                            <field name="can_manager_approved" invisible="1"/>
-                            <field name="can_reject" invisible="1"/>
-                            <field name="requested_by" readonly="1"/>
-                            <field name="department_id" />
-                            <field name="assigned_to" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        </group>
-                        <group>
-                            <field name="date_start"
-                               attrs="{'readonly': [('is_editable','=', False)]}"/>
-                            <field name="end_start"
-                               attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page string="Products">
-                            <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
-                                <tree decoration-muted="cancelled == True">
-                                    <field name="product_id"/>
-                                    <field name="name"/>
-                                    <field name="product_qty"/>
-                                    <field name="product_uom_id" groups="product.group_uom"/>
-                                    <field name="date_required"/>
-                                    <field name="cancelled" invisible="1"/>
-                                    <field name="is_editable" invisible="1"/>
-                                </tree>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <group>
-                                                <field name="is_editable" invisible="1"/>
-                                                <field name="product_id"/>
-                                                <field name="name"/>
-                                                <label for="product_qty" />
-                                                <div>
-                                                    <field name="product_qty"
-                                                           class="oe_inline"/>
-                                                    <field name="product_uom_id"
-                                                           groups="product.group_uom"
-                                                           class="oe_inline"/>
-                                                </div>
-
-                                                <field name="date_required"/>
-                                                <field name="cancelled"/>
-
-                                            </group>
-                                        </group>
-                                        <group>
-                                            <separator string="Specifications"/>
-                                            <newline/>
-                                            <field name="specifications" nolabel="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                                        </group>
-                                        <notebook>
-                                        </notebook>
-                                    </sheet>
-                                </form>
-                            </field>
-                        </page>
-                        <page string="Description">
-                            <field name="description" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        </page>
-
-                        <page string="Other Information">
                             <group>
-                                <group>
-                                     <field name="create_date" readonly="1"/>
-                                </group>
-                                <group>
-                                     <field name="create_uid" readonly="1"/>
-                                </group>
+                                <field name="can_leader_approved" invisible="1"/>
+                                <field name="can_manager_approved" invisible="1"/>
+                                <field name="can_reject" invisible="1"/>
+                                <field name="requested_by" readonly="1"/>
+                                <field name="department_id" />
+                                <field name="assigned_to" attrs="{'readonly': [('is_editable','=', False)]}"/>
                             </group>
+                            <group>
+                                <field name="date_start"
+                                   attrs="{'readonly': [('is_editable','=', False)]}"/>
+                                <field name="end_start"
+                                   attrs="{'readonly': [('is_editable','=', False)]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
+                                    <tree decoration-muted="cancelled == True">
+                                        <field name="product_id"/>
+                                        <field name="name"/>
+                                        <field name="product_qty"/>
+                                        <field name="product_uom_id" groups="product.group_uom"/>
+                                        <field name="date_required"/>
+                                        <field name="cancelled" invisible="1"/>
+                                        <field name="is_editable" invisible="1"/>
+                                    </tree>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <group>
+                                                    <field name="is_editable" invisible="1"/>
+                                                    <field name="product_id"/>
+                                                    <field name="name"/>
+                                                    <label for="product_qty" />
+                                                    <div>
+                                                        <field name="product_qty"
+                                                               class="oe_inline"/>
+                                                        <field name="product_uom_id"
+                                                               groups="product.group_uom"
+                                                               class="oe_inline"/>
+                                                    </div>
 
-                        </page>
-                    </notebook>
-                </sheet>
-                <div class="oe_chatter">
-                  <field name="message_follower_ids" widget="mail_followers"/>
-                  <field name="message_ids" widget="mail_thread"/>
-                </div>
+                                                    <field name="date_required"/>
+                                                    <field name="cancelled"/>
+
+                                                </group>
+                                            </group>
+                                            <group>
+                                                <separator string="Specifications"/>
+                                                <newline/>
+                                                <field name="specifications" nolabel="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                                            </group>
+                                            <notebook>
+                                            </notebook>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Description">
+                                <field name="description" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                            </page>
+
+                            <page string="Other Information">
+                                <group>
+                                    <group>
+                                         <field name="create_date" readonly="1"/>
+                                    </group>
+                                    <group>
+                                         <field name="create_uid" readonly="1"/>
+                                    </group>
+                                </group>
+
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                      <field name="message_follower_ids" widget="mail_followers"/>
+                      <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -173,6 +172,8 @@
                     <field name="name" string="Purchase Request"/>
                     <separator/>
                     <field name="state"/>
+                    <field name="assigned_to"/>
+                    <field name="requested_by" />
                     <filter name="unassigned" string="Unassigned"
                             domain="[('assigned_to','=', False)]"
                             help="Unassigned Request"/>
@@ -197,21 +198,19 @@
                     <filter string="Unread Messages"
                             name="message_needaction"
                             domain="[('message_needaction','=',True)]"/>
-                    <filter domain="[('assigned_to','=', uid)]"
-                            help="Assigned to me"/>
-                    <filter domain="[('requested_by','=', uid)]"
+                    <filter string="Assigned to me"
+                            name="assigned_to_me"
+                            domain="[('assigned_to','=',uid)]"/>
+                    <filter domain="[('requested_by','=', uid)]" name="my_request"
                             help="My requests"/>
-                    <field name="requested_by" />
-                    <field name="assigned_to" />
                     <group expand="0" string="Group By...">
-                        <filter string="Requested by" icon="terp-personal"
+                        <filter string="Requested by" icon="terp-personal" name="request_by"
                                 domain="[]"
                                 context="{'group_by':'requested_by'}"/>
-                        <filter string="Assigned to" icon="terp-personal"
+                        <filter string="Assigned to" icon="terp-personal" name ="assigned_by"
                                 domain="[]"
                                 context="{'group_by':'assigned_to'}"/>
-                        <filter string="Source" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'origin'}"/>
-                        <filter string="Start Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_start'}"/>
+                        <filter string="Start Date" name="start_date" icon="terp-go-month" domain="[]" context="{'group_by':'date_start'}"/>
                     </group>
                 </search>
             </field>
