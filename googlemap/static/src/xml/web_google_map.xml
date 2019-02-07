@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="FieldGoogleMap">
+        <div class="google-map">
+            <input id="tung_google_map_search" class="controls" type="text" placeholder="Search Box"/>
+            <div id="tung_googlemap"></div>
+        </div>
+    </t>
+</templates>

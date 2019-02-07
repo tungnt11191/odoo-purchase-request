@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link href="/googlemap/static/src/css/google_map.css" rel="stylesheet" type="text/css"/>
+            <script src="/googlemap/static/src/js/google_map.js" type="text/javascript"/>
+        </xpath>
+    </template>
+    <template id="layout_map" name="Web layout with google map" inherit_id="web.layout">
+        <xpath expr="//script" position="before">
+            <!--<script t-attf-src="//maps.google.com/maps/api/js?key=#{google_maps_api_key}"></script>-->
+            <script t-attf-src="//maps.google.com/maps/api/js?libraries=places&amp;key=#{google_maps_api_key}"></script>
+        </xpath>
+    </template>
+</odoo>
