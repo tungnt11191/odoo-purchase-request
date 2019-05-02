@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="view_change_crm_lead_simplified" model="ir.ui.view">
+            <field name="name">blog.category.crm.lead.form.simple</field>
+            <field name="model">crm.lead</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <form string="Create an Opportunity">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="company_id" />
+                                <field name="user_id"/>
+                            </group>
+                        </group>
+                        <footer>
+                            <button name="cancel_button" string="Discard" class="btn-primary" special="cancel"/>
+                            <button string="Confirm" name="action_save_company_n_staff" type="object" class="btn-secondary"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_crm_lead_change_company_n_staff" model="ir.actions.act_window">
+            <field name="name">Lead</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">crm.lead</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_change_crm_lead_simplified"/>
+        </record>
+
+        <record id="blog_category_crm_lead_kanban_inherited" model="ir.ui.view">
+            <field name="name">view.blog.category.crm.lead.kanban.inherited</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+            <field name="priority" eval="6"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('dropdown-menu')]" position="inside">
+                    <t t-if="widget.editable">
+                        <a groups="base.group_erp_manager" class="dropdown-item" role="menuitem" name="open_action_crm_lead_change_company_n_staff" type="object">Change</a>
+                    </t>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

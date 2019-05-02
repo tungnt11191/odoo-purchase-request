@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="blog_category_blog_post_form_inherited" model="ir.ui.view">
+            <field name="name">view.blog.category.blog.post.form.inherited</field>
+            <field name="model">blog.post</field>
+            <field name="inherit_id" ref="website_blog.view_blog_post_form"/>
+            <field name="priority" eval="6"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='website_id']" position="after">
+                    <field name="category_id"/>
+                    <field name="country_id"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

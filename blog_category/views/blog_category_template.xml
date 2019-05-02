@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<odoo>
+    <template id="blog_category.asset_blog_category" inherit_id="website.assets_frontend">
+        <xpath expr="//script[last()]" position="after">
+            <script type="text/javascript" src="/blog_category/static/src/js/content/website_root.js"/>
+        </xpath>
+    </template>
+    <!-- Front-end/Back-end integration -->
+    <template id="blog_category" inherit_id="website.user_navbar">
+        <xpath expr="//ul[hasclass('o_menu_systray')]" position="inside">
+
+            <li t-if="'category_id' in main_object.fields_get()"  t-att-data-id="main_object.id" t-att-data-object="main_object._name">
+                <a class="dropdown-toggle waves" id="chosen_category" data-toggle="dropdown" href="#">
+                    <t t-if="main_object.category_id">
+                        <t t-esc="main_object.category_id.name"/>
+                    </t>
+                    <t t-else="">Select category</t>
+                </a>
+                <div class="dropdown-menu" role="menu">
+                    <t t-foreach="multi_blog_categories" t-as="category">
+                        <a role="menuitem" href="#"
+                            class="dropdown-item oe_menu_text js_multi_blog_category_switch"
+                            t-att-category_id="str(category['id'])"
+                            t-att-data-category_id="str(category['id'])"
+                            t-att-data-category_name="str(category['name'])"
+                        >
+                            <span t-esc="category['name']" />
+                        </a>
+                    </t>
+                </div>
+            </li>
+
+            <li t-if="'country_id' in main_object.fields_get()"  t-att-data-id="main_object.id" t-att-data-object="main_object._name">
+                <a class="dropdown-toggle waves" id="chosen_country" data-toggle="dropdown" href="#">
+                    <t t-if="main_object.country_id">
+                        <t t-esc="main_object.country_id.name"/>
+                    </t>
+                    <t t-else="">Select country</t>
+                </a>
+                <div class="dropdown-menu" role="menu">
+                    <t t-foreach="multi_countries" t-as="country">
+                        <a role="menuitem" href="#"
+                            class="dropdown-item oe_menu_text js_multi_blog_country_switch"
+                            t-att-country_id="str(country['id'])"
+                            t-att-data-country_id="str(country['id'])"
+                            t-att-data-country_name="str(country['name'])"
+                        >
+                            <span t-esc="country['name']" />
+                        </a>
+                    </t>
+                </div>
+            </li>
+        </xpath>
+    </template>
+</odoo>
