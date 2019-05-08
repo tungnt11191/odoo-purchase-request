@@ -2,11 +2,6 @@ odoo.define('blog_category.website_root_inherit', function (require) {
 'use strict';
 
 var core = require('web.core');
-var Widget = require('web.Widget');
-var SummernoteManager = require('web_editor.rte.summernote');
-var WebsiteNewMenu = require('website.newMenu');
-var wUtils = require('website.utils');
-var Dialog = require("web.Dialog");
 var websiteRootData = require('website.WebsiteRoot');
 
 websiteRootData.WebsiteRoot.include({

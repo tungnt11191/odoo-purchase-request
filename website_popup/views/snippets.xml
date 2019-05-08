@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="website_popup_assets_frontend" inherit_id="web.assets_frontend" name="Website Assets">
+        <xpath expr="//script[last()]" position="after">
+            <script type="text/javascript" src="/website_popup/static/src/js/website_popup.js"/>
+        </xpath>
+    </template>
+
+    <template id="website_popup" inherit_id="website.layout" name="Popup">
+        <xpath expr="//div[@id='wrapwrap']" position="after">
+                <!-- Modal -->
+              <div role="dialog" id="survey_modal" class="modal" tabindex="-1" t-ignore="true">
+                    <div class="modal-dialog">
+                        <form role="form" id="form_popup_survey">
+                        <div class="modal-content">
+                            <header class="modal-header">
+                                <h3 class="modal-title">Xin Chào</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">×</button>
+                            </header>
+                            <main class="modal-body">
+                                <div class="form-group row mb-1">
+                                    <label for="page-name" class="col-md-4 col-form-label">
+                                        Interest Country
+                                    </label>
+                                    <div class="col-md-8">
+                                        <select class="form-control" id="interest_country" name="interest_country"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label for="page-name" class="col-md-4 col-form-label">
+                                        Income
+                                    </label>
+                                    <div class="col-md-8">
+                                        <input type="number" id="income" name="income" class="form-control" min="0" step="100000"/>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label for="page-name" class="col-md-4 col-form-label">
+                                        Gender
+                                    </label>
+                                    <div class="col-md-8">
+                                        <select class="form-control" id="gender" name="gender">
+                                            <option value="female">Female</option>
+                                            <option value="male">Male</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label for="page-name" class="col-md-4 col-form-label">
+                                        Age
+                                    </label>
+                                    <div class="col-md-8">
+                                        <input type="number" id="age" name="age"  class="form-control" min="0" step="1"/>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label for="page-name" class="col-md-4 col-form-label">
+                                        Interest Category
+                                    </label>
+                                    <div class="col-md-8">
+                                        <select class="form-control" id="interest_category" name="interest_category"></select>
+                                    </div>
+                                </div>
+                            </main>
+                            <footer class="modal-footer">
+                                <span class="btn btn-primary btn-confirm-survey">Submit</span>
+                                <button type="button" class="btn" data-dismiss="modal" aria-label="Cancel">Cancel</button>
+                            </footer>
+                        </div>
+                        </form>
+                    </div>
+              </div>
+        </xpath>
+    </template>
+</odoo>

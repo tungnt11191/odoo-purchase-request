@@ -40,7 +40,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//div[hasclass('dropdown-menu')]" position="inside">
                     <t t-if="widget.editable">
-                        <a groups="base.group_erp_manager" class="dropdown-item" role="menuitem" name="open_action_crm_lead_change_company_n_staff" type="object">Change</a>
+                        <a groups="base.group_erp_manager" class="dropdown-item" role="menuitem" name="open_action_crm_lead_change_company_n_staff" type="object">Assign</a>
                     </t>
                 </xpath>
             </field>
