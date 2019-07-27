@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id='gps_monitor_vehicle_view_form' model='ir.ui.view'>
+        <field name="name">gps_monitor.vehicle.form</field>
+        <field name="model">gps_monitor.vehicle</field>
+        <field name="arch" type="xml">
+            <form string="Vehicle">
+                <sheet>
+                    <group col="2" string="General Properties">
+                        <group>
+                            <field name="name" />
+                        </group>
+                        <group >
+                            <field name="code" />
+                        </group>
+                    </group>
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread" options='{"thread_level": 1}'/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id='gps_monitor_vehicle_view_tree' model='ir.ui.view'>
+        <field name="name">gps_monitor.vehicle.tree</field>
+        <field name="model">gps_monitor.vehicle</field>
+        <field name="arch" type="xml">
+            <tree string="Vehicle">
+                <field name="name" />
+                <field name="code" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="gps_monitor_vehicle_view_gmap" model="ir.ui.view">
+        <field name="name">view.gps_monitor.vehicle.gmap</field>
+        <field name="model">gps_monitor.vehicle</field>
+        <field name="arch" type="xml">
+            <gmap class="o_gps_monitor_vehicle_map" show_filter_time="false" show_log_data="false" is_monitor="true">
+            </gmap>
+        </field>
+    </record>
+    <record id='gps_monitor_vehicle_action' model='ir.actions.act_window'>
+        <field name="name">Vehicles</field>
+        <field name="res_model">gps_monitor.vehicle</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">gmap,form</field>
+        <field name="view_id" ref="gps_monitor_vehicle_view_gmap"/>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to create a new vehicle.
+          </p><p>
+            You will be able to manage your fleet by keeping track of the
+            contracts, services, fixed and recurring costs, odometers and
+            fuel logs associated to each vehicle.
+        </p><p>
+            Odoo will warn you when services or contract have to be
+            renewed.
+          </p>
+        </field>
+    </record>
+    <menuitem name="Vehicles" action="gps_monitor_vehicle_action" web_icon="fleet,static/description/icon.png" id="gps_monitor_vehicles" sequence="2"/>
+    <!--<menuitem action="gps_monitor_vehicle_action" parent="gps_monitor_vehicles" id="gps_monitor_vehicle_menu"/>-->
+
+    <record id="gps_monitor_vehicle_data_view_gmap" model="ir.ui.view">
+        <field name="name">view.gps_monitor.vehicle.data.gmap</field>
+        <field name="model">gps_monitor.vehicle</field>
+        <field name="arch" type="xml">
+            <gmap class="o_gps_monitor_vehicle_map" show_filter_time="true" show_log_data="true" is_monitor="false">
+            </gmap>
+        </field>
+    </record>
+    <record id='gps_monitor_vehicle_data_action' model='ir.actions.act_window'>
+        <field name="name">Vehicles Data</field>
+        <field name="res_model">gps_monitor.vehicle</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">gmap,form</field>
+        <field name="view_id" ref="gps_monitor_vehicle_data_view_gmap"/>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to create a new vehicle.
+          </p><p>
+            You will be able to manage your fleet by keeping track of the
+            contracts, services, fixed and recurring costs, odometers and
+            fuel logs associated to each vehicle.
+        </p><p>
+            Odoo will warn you when services or contract have to be
+            renewed.
+          </p>
+        </field>
+    </record>
+
+    <menuitem name="Vehicles Data" action="gps_monitor_vehicle_data_action" web_icon="fleet,static/description/icon.png" id="gps_monitor_vehicles_data" sequence="2"/>
+
+</odoo>

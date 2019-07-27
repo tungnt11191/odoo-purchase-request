@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns	= "http://www.w3.org/ns/widgets"
+	xmlns:gap	= "http://phonegap.com/ns/1.0"
+	id			= "com.phonegap.gettingstarted"
+	version 	= "1.0.0">
+
+	<name>GPS tracker</name>
+
+	<description>
+		A GPS-tracker for your enjoyment.
+	</description>
+
+	<author href="https://github.com/Adrianod/Open-GPS-tracker"
+		email="henrikk@gmail.com">
+		Henrik Johansson
+	</author>
+
+	<icon src="icon.png" gap:role="default" />
+
+	<feature name="http://api.phonegap.com/1.0/geolocation"/>
+	<feature name="http://api.phonegap.com/1.0/network"/>
+
+	<preference name="orientation" value="portrait" />
+	<preference name="exit-on-suspend" value="false" />
+	<preference name="phonegap-version" value="2.2.0" />
+	
+	<access origin="*" />
+</widget>

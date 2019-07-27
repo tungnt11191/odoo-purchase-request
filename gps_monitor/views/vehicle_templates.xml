@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="gps_monitor.assets_gmaps">
+
+    </template>
+    <template id="webclient_bootstrap" name="webclient_bootstrap gps_monitor" inherit_id="web.webclient_bootstrap">
+        <xpath expr="//t[@t-call-assets='web.assets_common']" position="before">
+            <t t-call="gps_monitor.assets_gmaps"/>
+        </xpath>
+    </template>
+    <template id="assets_backend" name="gps_monitor assets backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <t t-set="google_maps_api_key" t-value="request.env['ir.config_parameter'].sudo().get_param('gps_monitor.api_key_geocode')"/>
+            <t t-set="socket_io_server" t-value="request.env['ir.config_parameter'].sudo().get_param('gps_monitor.socket_io_server')"/>
+            <script type="text/javascript">
+                var socket_io_server = '<t t-esc="socket_io_server"/>';
+            </script>
+            <script type="text/javascript" src="/gps_monitor/static/src/js/libs/daterangepicker.min.js"></script>
+            <script type="text/javascript" src="/gps_monitor/static/src/js/libs/jquery.dataTables.min.js"></script>
+            <link rel="stylesheet" type="text/css" href="/gps_monitor/static/src/css/daterangepicker.css" />
+            <link rel="stylesheet" type="text/css" href="/gps_monitor/static/src/css/datatables.min.css" />
+            <link rel="stylesheet" type="text/less" href="/gps_monitor/static/src/css/gps_monitor.css"/>
+            <link rel="stylesheet" type="text/less" href="/gps_monitor/static/src/less/web_maps.less"/>
+            <script t-att-async="'async'" t-att-defer="'defer'" t-attf-src="http://maps.googleapis.com/maps/api/js?key=#{google_maps_api_key}"></script>
+            <script src="/gps_monitor/static/src/js/libs/socket.io.js"></script>
+            <script type="text/javascript" src="/gps_monitor/static/src/js/libs/slider.js"></script>
+            <script type="text/javascript" src="/gps_monitor/static/src/js/view/map/map_model.js"></script>
+            <script type="text/javascript" src="/gps_monitor/static/src/js/view/map/map_controller.js"></script>
+            <script type="text/javascript" src="/gps_monitor/static/src/js/view/map/map_renderer.js"></script>
+            <script type="text/javascript" src="/gps_monitor/static/src/js/view/map/map_view.js"></script>
+            <script type="text/javascript" src="/gps_monitor/static/src/js/view/view_registry.js"></script>
+        </xpath>
+    </template>
+</odoo>

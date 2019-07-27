@@ -1,0 +1,154 @@
+.o_map_view { width:100%; height:100%; }
+
+#settings{
+    position: fixed;
+    width: 236px;
+    background: white;
+    margin-top: 58px;
+    right: 9px;
+    padding: 6px;
+    color: #444;
+    border: 1px solid #717B87;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px;
+}
+
+#runnerlist{
+    border-bottom: 1px solid lightgray;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+}
+
+#runnerlist{
+    width: 100%;
+    border-spacing: 0;
+}
+
+#runnerlist th, [for=replayspeed]{
+    font-size: .8em;
+    font-weight: bold;
+}
+
+#runnerlist th{
+    text-align: center;
+}
+
+#runnerlist th:first-child{
+    text-align: left;
+}
+
+#runnerlist th:last-child{
+    text-align: right;
+}
+
+.replay{
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    border: 1px solid #777777;
+    margin-right: 4px;
+    line-height: 15px;
+}
+
+.runnercolor{
+    padding: 0;
+    margin: 0;
+    border: none;
+    width: 20px;
+    float: left;
+    height: 24px;
+    margin-top: -4px;
+    margin-right: -3px;
+    margin-left: -1px;
+    cursor: pointer;
+}
+
+.pace{
+    text-align: right;
+    font-family: 'source code pro', monospace;
+}
+
+#settings p{
+    padding-bottom: 1em;
+    border-bottom: 1px solid #E9E9E9;
+}
+
+input[type="range"]{
+    width: 100%;
+}
+
+.stopped{
+    background: rgba(0, 255, 0, 0.5);
+}
+
+.started{
+    background: rgba(255, 0, 0, 0.5);
+}
+
+.ft_theme_switcher {
+    position: fixed;
+    top: 125px;
+    right: -400px;
+    z-index: 99999999;
+    background-color: rgb(241, 241, 244);
+    color: #fd2828;
+    padding: 20px;
+    width: 400px;
+    border-radius: 3px 0 0 3px;
+}
+
+.ft_theme_switcher .toggle {
+    top: 14px;
+    font-size: 18px;
+    line-height: 40px;
+    text-align: center;
+    background-color: rgb(241, 241, 244);
+    cursor: pointer;
+    left: -38px;
+    width: 38px;
+    height: 40px;
+    position: absolute;
+    border-radius: 3px 0 0 3px;
+}
+
+[class^="s7-"], [class*=" s7-"] {
+
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#vehicle_tracking_data th, [for=replayspeed] {
+    font-size: .8em;
+    font-weight: bold;
+}
+.daterangepicker.show-calendar{
+    z-index: 99999999;
+}
+.dataTables_length label {
+    display: inline-flex;
+}
+
+.label_filter_time {
+    padding-left: 0px !important;
+}
+.input_filter_time{
+    width: 75% !important;
+}
+.dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+    color: #fd2828 !important;
+}
+.paginate_button {
+    color: #fd2828 !important;
+}
+table.dataTable tbody tr {
+    background-color: rgb(241, 241, 244) !important;
+}

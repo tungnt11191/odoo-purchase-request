@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+    <div t-name="gps_monitor.MapView" class="o_map_container">
+        <div class="o_map_view">
+
+        </div>
+        <div id="settings" style="display: none;">
+            <table id="runnerlist_old">
+                <tr><th>name</th><th>min/km</th></tr>
+            </table>
+            <form>
+                <input type="checkbox" id="togglemap" name="togglemap" /><label for="togglemap">Show o-map</label>
+                <label for="replayspeed">Replay time:</label><input id="replayspeed" name="replayspeed" type="range" min="100" max="5000" value="100" step="100"/>
+            </form>
+
+        </div>
+
+         <div class="ft_theme_switcher ocult">
+            <div class="toggle"><i class="fa fa-cog icon s7-settings "></i></div>
+             <div class="search_box">
+                <label class="label_filter_time col-xs-3">Time :</label>
+                <input type="text" name="datetimes" class="col-xs-9 input_filter_time" />
+             </div>
+
+             <div class="table-vehicle">
+                 <div class="desc">
+                  <h3>DS xe</h3>
+                </div>
+                <table class="table" id="runnerlist">
+                    <thead>
+                      <tr>
+                        <th>BKS</th>
+                        <th>V.T</th>
+                        <th>T.T</th>
+                        <th>T.G</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-vehicle-data col-xs-12">
+                <div class="desc">
+                  <h3>Monitor</h3>
+                </div>
+                <table class="table" id="vehicle_tracking_data">
+                    <thead>
+                      <tr>
+                        <th>Log</th>
+                        <th>Lat</th>
+                        <th>V.T</th>
+                        <th>T.G</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+          </div>
+    </div>
+</template>
