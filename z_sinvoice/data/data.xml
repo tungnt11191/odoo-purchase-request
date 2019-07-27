@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--<record id="x_invoice_template_hoa_don_gia_tri_gia_tang" model="x.invoice.template">-->
+            <!--<field name="name">Hóa don gia tri gia tang</field>-->
+            <!--<field name="code">01GTKT0/002</field>-->
+            <!--<field name="invoice_symbol">AB/19E</field>-->
+        <!--</record>-->
+
+         <record id="z_invoice_invoice_type_01GTKT" model="z.invoice.invoice.type">
+			<field name="name">Hóa đơn giá trị gia tăng</field>
+			<field name="code">01GTKT</field>
+		</record>
+        <record id="z_invoice_invoice_type_02GTTT" model="z.invoice.invoice.type">
+			<field name="name">Hóa đơn bán hàng</field>
+			<field name="code">02GTTT</field>
+		</record>
+        <record id="z_invoice_invoice_type_03XKNB" model="z.invoice.invoice.type">
+			<field name="name">Mẫu phiếu xuất kho kiêm vận chuyển nội bộ</field>
+			<field name="code">03XKNB</field>
+		</record>
+        <record id="z_invoice_invoice_type_04HGDL" model="z.invoice.invoice.type">
+			<field name="name">Mẫu phiếu xuất kho hàng gửi bán đại lý</field>
+			<field name="code">04HGDL</field>
+		</record>
+        <record id="z_invoice_invoice_type_07KPTQ" model="z.invoice.invoice.type">
+			<field name="name">Hóa đơn bán hàng (dành cho tổ chức, cá nhân trong khu phi thuế quan)</field>
+			<field name="code">07KPTQ</field>
+		</record>
+    </data>
+</odoo>

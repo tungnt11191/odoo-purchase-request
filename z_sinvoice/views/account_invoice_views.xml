@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="sinvoice_account_invoice_view_form_inherit" model="ir.ui.view">
+            <field name="name">sinvoice.account.invoice.view.form.inherit</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='move_id']" position="before">
+                    <field name="x_origin_invoice"/>
+                </xpath>
+                <xpath expr="//button[@id='account_invoice_payment_btn']" position="before">
+                    <button name="create_hddt" type="object" string="Tạo HĐĐT" confirm="Are you sure you?"/>
+                    <button name="cancel_hddt" type="object" string="Hủy HĐĐT" confirm="Are you sure you?"/>
+                </xpath>
+                <xpath expr="//page" position="after">
+                    <page string="Thông Tin HĐĐT">
+                        <group>
+                            <group>
+                                <field name="x_invoice_type"/>
+                                <field name="x_template_code"/>
+                                <field name="x_invoice_series"/>
+                            </group>
+                            <group>
+                                <field name="x_invoice_status" readonly="1"/>
+                                <field name="x_invoice_no" readonly="1"/>
+                                <field name="x_transaction_id" readonly="1"/>
+                                <field name="x_created_sinvoice" readonly="1"/>
+                                <field name="x_canceled_sinvoice" readonly="1"/>
+                                <field name="x_reservation_code" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="x_invoice_template_view_form_inherit" model="ir.ui.view">
+            <field name="name">x.invoice.template.view.form.inherit</field>
+            <field name="model">x.invoice.template</field>
+            <field name="inherit_id" ref="z_invoice_template.view_invoice_template_from"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='code']" position="after">
+                    <field name="x_invoice_type"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="z_invoice_create_sinvoice_wizard_view" model="ir.ui.view">
+            <field name="name">Confirm to create Sinvoice</field>
+            <field name="model">z.invoice.create.sinvoice.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Xác Nhận Tạo HĐĐT">
+                    <div>
+                        <p>Hóa đơn chưa tạo hóa đơn điện tử hoặc không ở trạng thái hủy</p>
+                    </div>
+                    <field name="invoice_ids" invisible="1"/>
+                    <footer>
+                        <button string="Create" name="create_sinvoice" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="z_invoice_create_sinvoic_wizard_action"
+                name="Tạo HĐĐT"
+                src_model="account.invoice"
+                res_model="z.invoice.create.sinvoice.wizard"
+                view_type="form" view_mode="form"
+                key2="client_action_multi" target="new"/>
+    </data>
+</odoo>

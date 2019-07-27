@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="z_sinvoice_view_users_form_inherit" model="ir.ui.view">
+            <field name="name">sinvoice.res.users.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='access_rights']" position="after">
+                    <page string="Tài Khoản HDDT">
+                        <group>
+                            <field name="x_sinvoice_username"/>
+                            <field name="x_sinvoice_password" password="True"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
