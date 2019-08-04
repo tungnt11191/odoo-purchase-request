@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_s_slide_slide_public,s.slide.slide.public,model_s_slide_slide,base.group_public,1,0,0,0
+access_s_slide_slide_portal,s.slide.slide.portal,model_s_slide_slide,base.group_portal,1,0,0,0
+access_s_slide_slide_designer,s.slide.slide.designer,model_s_slide_slide,website.group_website_designer,1,1,1,1
+
+access_s_slide_insite_public,s.slide.insite.public,model_s_slide_insite,base.group_public,1,0,0,0
+access_s_slide_insite_portal,s.slide.insite.portal,model_s_slide_insite,base.group_portal,1,0,0,0
+access_s_slide_insite_designer,s.slide.insite.designer,model_s_slide_insite,website.group_website_designer,1,1,1,1
+
+access_s_slide_layer_public,s.slide.layer.public,model_s_slide_layer,base.group_public,1,0,0,0
+access_s_slide_layer_portal,s.slide.layer.portal,model_s_slide_layer,base.group_portal,1,0,0,0
+access_s_slide_layer_designer,s.slide.layer.designer,model_s_slide_layer,website.group_website_designer,1,1,1,1

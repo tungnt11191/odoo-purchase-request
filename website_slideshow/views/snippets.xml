@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- This record will create the building block and its layout -->
+    <template id="s_slideshow" name="Slideshow">
+        <section class="s_slideshow">
+            <!-- START REVOLUTION SLIDER 5.0 -->
+            <div class="rev_slider_wrapper">
+                <div id="revoslide" class="rev_slider tungnt_s_slideshow" data-version="5.0">
+                    <!--<ul>-->
+                        <!--<li data-transition="fade">-->
+                            <!--&lt;!&ndash; MAIN IMAGE &ndash;&gt;-->
+                            <!--<img src="/website_slideshow/static/img/agencyslider.jpg" alt="" width="1920" height="1280"/>-->
+                            <!--&lt;!&ndash; LAYER NR. 1 &ndash;&gt;-->
+                            <!--<div class="tp-caption News-Title"-->
+                                 <!--data-x="left" data-hoffset="80"-->
+                                 <!--data-y="top" data-voffset="450"-->
+                                 <!--data-whitespace="normal"-->
+                                 <!--data-transform_idle="o:1;"-->
+                                 <!--data-transform_in="o:0"-->
+                                 <!--data-transform_out="o:0"-->
+                                 <!--data-start="500">DISCOVER THE WILD-->
+                            <!--</div>-->
+                        <!--</li>-->
+
+                        <!--<li data-transition="fade">-->
+                            <!--&lt;!&ndash; MAIN IMAGE &ndash;&gt;-->
+                            <!--<img src="/website_slideshow/static/img/amigos.jpg" alt="" width="1920" height="1280"/>-->
+                            <!--&lt;!&ndash; LAYER NR. 1 &ndash;&gt;-->
+                            <!--<div class="tp-caption News-Title"-->
+                                 <!--data-x="left" data-hoffset="80"-->
+                                 <!--data-y="top" data-voffset="450"-->
+                                 <!--data-whitespace="normal"-->
+                                 <!--data-transform_idle="o:1;"-->
+                                 <!--data-transform_in="o:0"-->
+                                 <!--data-transform_out="o:0"-->
+                                 <!--data-start="500">DISCOVER THE WILD-->
+                            <!--</div>-->
+                        <!--</li>-->
+                    <!--</ul>-->
+                </div><!-- END REVOLUTION SLIDER -->
+            </div><!-- END OF SLIDER WRAPPER -->
+        </section>
+    </template>
+
+        <!-- This record will create a preview of the building block in the left menu from where you choose the blocks -->
+    <template id="add_slideshow_to_bar" inherit_id="website.snippets" name="Place into building blocks bar">
+        <xpath expr="//div[@id='snippet_structure']" position="inside">
+            <div class="o_panel_body">
+                <t t-snippet="website_slideshow.s_slideshow"
+                   t-thumbnail="/website/static/src/img/blocks/block_references.png"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='snippet_options']" position="inside">
+            <div data-js='revoslider' data-selector=".s_slideshow">
+                <li class="divider"></li>
+                <li class="dropdown-submenu">
+                    <a tabindex="-2" href="#"><i class="fa fa-clock-o"/>Slideshow speed</a>
+                    <ul class="dropdown-menu">
+                         <li data-interval="1000"><a href="#">1s</a></li>
+                         <li data-interval="2000"><a href="#">2s</a></li>
+                         <li data-interval="3000"><a href="#">3s</a></li>
+                         <li data-interval="5000"><a href="#">5s</a></li>
+                         <li data-interval="10000"><a href="#">10s</a></li>
+                         <li data-interval="0"><a href="#">Disable autoplay</a></li>
+                    </ul>
+                </li>
+                <li data-add-slide="true" data-no-preview="true"><a href="#"><i class="fa fa-plus-circle"/>Add Slide</a></li>
+                <li data-remove-slide="true" data-no-preview="true"><a href="#" ><i class="fa fa-trash-o"/>Remove Slide</a></li>
+            </div>
+        </xpath>
+
+    </template>
+
+    <!-- This record will create the building block and its layout -->
+    <template id="s_title_references" name="References with title">
+        <section class="s_references bg-gray-lighter">
+            <div class="container">
+                <div class="row">
+                    <h3>
+                        <center>Our references</center>
+                    </h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 col-xs-6 mt16 mb16">
+                        <img src="/web/image/website.s_reference_demo_image_1" class="img img-responsive "
+                             alt="Demo Logo 1"/>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-6 mt16 mb16">
+                        <img src="/web/image/website.s_reference_demo_image_2" class="img img-responsive "
+                             alt="Demo Logo 2"/>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-6 mt16 mb16">
+                        <img src="/web/image/website.s_reference_demo_image_3" class="img img-responsive "
+                             alt="Demo Logo 3"/>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-6 mt16 mb16">
+                        <img src="/web/image/website.s_reference_demo_image_4" class="img img-responsive "
+                             alt="Demo Logo 4"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+        <!-- This record will create a preview of the building block in the left menu from where you choose the blocks -->
+    <template id="add_title_references_to_bar" inherit_id="website.snippets" name="Place into building blocks bar">
+        <xpath expr="//div[@id='snippet_structure']" position="inside">
+            <div class="o_panel_body">
+                <t t-snippet="website_slideshow.s_title_references"
+                   t-thumbnail="/website/static/src/img/blocks/block_references.png"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
