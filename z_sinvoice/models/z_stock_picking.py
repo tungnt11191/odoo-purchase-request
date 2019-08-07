@@ -35,8 +35,7 @@ class StockPicking(models.Model):
     x_created_sinvoice = fields.Datetime(string=u'Ngày tạo HĐĐT', copy=False)
     x_canceled_sinvoice = fields.Datetime(string=u'Ngày hủy HĐĐT', copy=False)
     x_reservation_code = fields.Char(u"Reservation Code", copy=False)
-    x_origin_invoice = fields.Char(string=u'Hóa đơn gốc(Hóa đơn điều chỉnh)', copy=False)
-
+    x_origin_invoice = fields.Char(string=u'Hóa đơn gốc(Hóa đơn điều chỉnh)', compute='_compute_origin_invoice', store=True, copy=False)
     x_economic_contract_number = fields.Char(string=u'Hợp đồng kinh tế số', copy=False)
     x_transportation_method = fields.Char(string=u'Phương tiện vận chuyển', copy=False)
     x_about = fields.Char(string=u'Về việc', copy=False)
@@ -51,6 +50,16 @@ class StockPicking(models.Model):
                 picking.x_able_to_sync = False
             else:
                 picking.x_able_to_sync = True
+
+    @api.multi
+    @api.depends('origin')
+    def _compute_origin_invoice(self):
+        for picking in self:
+            if picking.origin:
+                origin_picking = self.env['stock.picking'].search([('name', '=', picking.origin)], limit=1)
+                picking.x_origin_invoice = origin_picking.x_supplier_invoice_number
+            else:
+                picking.x_origin_invoice = False
 
     @api.onchange('x_template_symbol')
     def _onchange_x_template_symbol(self):
