@@ -9,13 +9,14 @@
     'description': """
 Hoa don dien tu
 """,
-    'depends': ['base','base_setup', 'mail', 'account','z_invoice_template'],
+    'depends': ['base','base_setup', 'mail', 'account','stock','z_invoice_template'],
     'data': [
         'security/s_invoice_security.xml',
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
         'views/res_country_views.xml',
         'views/account_invoice_views.xml',
+        'views/stock_picking_views.xml',
         'data/data.xml',
     ],
     'installable': True,

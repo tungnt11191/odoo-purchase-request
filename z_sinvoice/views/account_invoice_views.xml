@@ -6,28 +6,26 @@
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='move_id']" position="before">
-                    <field name="x_origin_invoice"/>
-                </xpath>
                 <xpath expr="//button[@id='account_invoice_payment_btn']" position="before">
-                    <button name="create_hddt" type="object" string="Tạo HĐĐT" confirm="Are you sure you?"/>
-                    <button name="cancel_hddt" type="object" string="Hủy HĐĐT" confirm="Are you sure you?"/>
+                    <button name="create_hddt" type="object" string="Tạo HĐĐT" confirm="Are you sure you?" attrs="{'invisible': [('x_invoice_status', '=', 'status_created')]}"/>
+                    <button name="cancel_hddt" type="object" string="Hủy HĐĐT" confirm="Are you sure you?" attrs="{'invisible': [('x_invoice_status', 'in', ['status_not_sync','status_canceled'])]}"/>
                 </xpath>
                 <xpath expr="//page" position="after">
                     <page string="Thông Tin HĐĐT">
                         <group>
                             <group>
-                                <field name="x_invoice_type"/>
-                                <field name="x_template_code"/>
-                                <field name="x_invoice_series"/>
+                                <!--<field name="x_invoice_type"/>-->
+                                <!--<field name="x_template_code"/>-->
+                                <!--<field name="x_invoice_series"/>-->
+                                <field name="x_reservation_code" readonly="1"/>
+                                <field name="x_transaction_id" readonly="1"/>
+                                <field name="x_origin_invoice"/>
                             </group>
                             <group>
                                 <field name="x_invoice_status" readonly="1"/>
-                                <field name="x_invoice_no" readonly="1"/>
-                                <field name="x_transaction_id" readonly="1"/>
+                                <!--<field name="x_invoice_no" readonly="1"/>-->
                                 <field name="x_created_sinvoice" readonly="1"/>
                                 <field name="x_canceled_sinvoice" readonly="1"/>
-                                <field name="x_reservation_code" readonly="1"/>
                             </group>
                         </group>
                     </page>
@@ -54,7 +52,6 @@
                     <div>
                         <p>Hóa đơn chưa tạo hóa đơn điện tử hoặc không ở trạng thái hủy</p>
                     </div>
-                    <field name="invoice_ids" invisible="1"/>
                     <footer>
                         <button string="Create" name="create_sinvoice" type="object" class="btn-primary"/>
                         <button string="Cancel" class="btn-secondary" special="cancel" />
@@ -63,7 +60,7 @@
             </field>
         </record>
 
-        <act_window id="z_invoice_create_sinvoic_wizard_action"
+        <act_window id="z_invoice_create_sinvoice_wizard_action"
                 name="Tạo HĐĐT"
                 src_model="account.invoice"
                 res_model="z.invoice.create.sinvoice.wizard"

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 import requests
 import json
 from odoo.exceptions import UserError, ValidationError
@@ -12,41 +12,40 @@ from datetime import date
 import werkzeug.utils
 
 
-class AccountInvoice(models.Model):
-    _inherit = 'x.invoice.template'
-    x_invoice_type = fields.Many2one('z.invoice.invoice.type', 'Loại hóa đơn', require=True)
+class StockPickingType(models.Model):
+    _inherit = 'stock.picking.type'
+
+    x_invoice_type = fields.Many2one('z.invoice.invoice.type', u'Loại HĐĐT', copy=False)
 
 
-class AccountInvoice(models.Model):
-    _inherit = 'account.invoice'
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
 
-    # x_invoice_type = fields.Many2one('x.invoice.template', 'Loại hóa đơn', copy=False)
-    # x_invoice_no = fields.Char(u'Số HĐĐT', copy=False)
+    x_partner_tax_code = fields.Char(string=_(u"Mã số thuế"), size=128)
+    x_template_symbol = fields.Many2one('x.invoice.template', string=_(u"Ký hiệu mẫu hóa đơn"))
+    x_invoice_symbol = fields.Char(string=_(u"Ký hiệu hóa đơn"), size=128)
+    x_supplier_invoice_number = fields.Char(string=_(u"Số hóa đơn"),
+                                            help=_("The reference of this invoice as provided by the supplier."))
     x_transaction_id = fields.Char(u'ID giao dịch HĐĐT', copy=False)
     x_invoice_status = fields.Selection([
         ('status_not_sync', 'Chưa tạo trên SINVOICE'),
         ('status_created', 'Đã tạo trên SINVOICE'),
         ('status_canceled', 'Đã hủy trên SINVOICE'),
-        ], string=u'Trạng thái SINVOICE', default='status_not_sync', readonly=True, copy=False)
-    # x_template_code = fields.Char(string=u"Ký hiệu mẫu hóa đơn", copy=False)
-    # x_invoice_series = fields.Char(string=u"Ký hiệu hóa đơn", copy=False)
+    ], string=u'Trạng thái SINVOICE', default='status_not_sync', readonly=True, copy=False)
     x_created_sinvoice = fields.Datetime(string=u'Ngày tạo HĐĐT', copy=False)
     x_canceled_sinvoice = fields.Datetime(string=u'Ngày hủy HĐĐT', copy=False)
     x_reservation_code = fields.Char(u"Reservation Code", copy=False)
     x_origin_invoice = fields.Char(string=u'Hóa đơn gốc(Hóa đơn điều chỉnh)', copy=False)
-    # @api.onchange('x_invoice_type')
-    # def _onchange_x_invoice_type(self):
-    #     if self.x_invoice_type:
-    #         self.x_template_code = self.x_invoice_type.code
-    #         self.x_invoice_series = self.x_invoice_type.invoice_symbol
 
-    def validate_tax_code(self, tax_code):
-        check = True
-        for c in tax_code:
-            if not str(c).isdigit():
-                check = False
-                break
-        return check
+    x_economic_contract_number = fields.Char(string=u'Hợp đồng kinh tế số', copy=False)
+    x_transportation_method = fields.Char(string=u'Phương tiện vận chuyển', copy=False)
+    x_about = fields.Char(string=u'Về việc', copy=False)
+    x_contract_number = fields.Char(string=u'Hợp đồng số', copy=False)
+
+    @api.onchange('x_template_symbol')
+    def _onchange_x_template_symbol(self):
+        if self.x_template_symbol:
+            self.x_invoice_symbol = self.x_template_symbol.invoice_symbol
 
     @api.multi
     def validate_invoice(self, invoice):
@@ -56,15 +55,18 @@ class AccountInvoice(models.Model):
         if not invoice.x_partner_tax_code:
             valid = False
             message = u'Mã số thuế để trống'
-        if invoice.date_invoice and today < invoice.date_invoice:
-            valid = False
-            message = u'Ngày đồng bộ nhỏ hơn ngày hóa đơn'
 
         if invoice.x_transaction_id:
             valid = False
             message = u'Hóa đơn đã được tạo hóa đơn điện tử'
 
+        # in stock picking
+        if not invoice.picking_type_id or not invoice.picking_type_id.x_invoice_type:
+            valid = False
+            message = u'Không có chức năng đồng bộ hóa đơn điện tử tại phiếu kho'
+
         return valid, message
+
 
     # adjustmentType :    1 - hoa don goc
     #                     3 - hoa don thay the
@@ -75,40 +77,32 @@ class AccountInvoice(models.Model):
     #                           2 - dieu chinh thong tin
     @api.multi
     def generate_invoice_date(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
-        payment_method_name = "TM/CK"
+        # transporter information
+        # buyer_name = invoice.implemented_by_id.name if invoice.implemented_by_id else ''
+        # if buyer_name == '':
+        #     buyer_name = invoice.company_id.partner_id.name if invoice.company_id and invoice.company_id.partner_id else ''
+
+        # transporter information
 
         # buyer information
         buyer_name = invoice.partner_id.name if invoice.partner_id else ''
         buyer_tax_code = invoice.x_partner_tax_code.strip() if invoice.x_partner_tax_code else ''
-
-        if not self.validate_tax_code(buyer_tax_code):
-            buyer_tax_code = ''
-            note = u'Người mua không cung cấp mã số thuế'
-
         buyer_address_line = invoice.partner_id.street if invoice.partner_id and invoice.partner_id.street else ''
         buyer_district_name = invoice.partner_id.x_district_id.x_name if invoice.partner_id and invoice.partner_id.x_district_id else ''
-        # buyer_postal_code = '2342324323'
         buyer_city_name = invoice.partner_id.state_id.name if invoice.partner_id and invoice.partner_id.state_id else ''
         buyer_country_code = '84'
         buyer_phone_number = invoice.partner_id.mobile if invoice.partner_id and invoice.partner_id.mobile else ''
         buyer_email = invoice.partner_id.email if invoice.partner_id and invoice.partner_id.email else ''
-        # buyer_bank_name = "Ngân hàng Quân đội MB"
-        # buyer_bank_account = "01578987871236547"
-        buyer_id_no = "8888899999"
-        buyer_id_type = "1" #1 or 3
-        buyer_code = "832472343b_b"
-        buyer_birthdate = invoice.partner_id.birthdate.strftime('%Y-%m-%d') if invoice.partner_id and invoice.partner_id.birthdate else ''
         # buyer information
 
         # seller information
-        seller_code = invoice.user_id.name if invoice.user_id else ''
+        seller_code = invoice.company_id.name if invoice.company_id else ''
         seller_legal_name = invoice.company_id.name if invoice.company_id else ''
         seller_tax_code = invoice.company_id.vat if invoice.company_id and invoice.company_id.vat else ''
         seller_address_line = invoice.company_id.partner_id.street if invoice.company_id.partner_id and invoice.company_id.partner_id.street else ''
         seller_phone_number = invoice.company_id.partner_id.mobile if invoice.company_id.partner_id and invoice.company_id.partner_id.mobile else ''
         seller_email = invoice.company_id.partner_id.email if invoice.company_id.partner_id and invoice.company_id.partner_id.email else ''
-        seller_bank_name = "Ngân hàng Quân đội MB"
-        seller_bank_account = "01578987871236547"
+
 
         data = {
             "generalInvoiceInfo": {
@@ -119,8 +113,6 @@ class AccountInvoice(models.Model):
                 "invoiceNote": "",
                 "adjustmentType": adjustment_type,
                 "paymentStatus": True,
-                "paymentType": payment_method_name,
-                "paymentTypeName": payment_method_name,
                 "cusGetInvoiceRight": True,
                 "userName": username
             },
@@ -129,19 +121,12 @@ class AccountInvoice(models.Model):
                 "buyerLegalName": buyer_name,
                 "buyerTaxCode": buyer_tax_code,
                 "buyerAddressLine": buyer_address_line,
-                # "buyerPostalCode": buyer_postal_code,
                 "buyerDistrictName": buyer_district_name,
                 "buyerCityName": buyer_city_name,
                 "buyerCountryCode": buyer_country_code,
                 "buyerPhoneNumber": buyer_phone_number,
                 "buyerFaxNumber": buyer_phone_number,
                 "buyerEmail": buyer_email,
-                # "buyerBankName": buyer_bank_name,
-                # "buyerBankAccount": buyer_bank_account,
-                "buyerIdNo": buyer_id_no,
-                "buyerIdType": buyer_id_type,
-                "buyerCode": buyer_code,
-                "buyerBirthDay": buyer_birthdate
             },
             "sellerInfo": {
                 "sellerCode": seller_code,
@@ -150,47 +135,70 @@ class AccountInvoice(models.Model):
                 "sellerAddressLine": seller_address_line,
                 "sellerPhoneNumber": seller_phone_number,
                 "sellerEmail": seller_email,
-                # "sellerBankName": seller_bank_name,
-                # "sellerBankAccount": seller_bank_account
             },
+            # "deliveryInfo": {
+            #     "deliveryOrderNumber": invoice.name,
+            #     "deliveryOrderDate":  invoice.scheduled_date.strftime('%Y%m%d%H%M%S'),
+            #     "deliveryOrderBy": invoice.company_id.partner_id.name,
+            #     "deliveryBy": buyer_name,
+            #     "fromWarehouseName": invoice.location_id.name,
+            #     "toWarehouseName": invoice.location_dest_id.name,
+            #     "transportationMethod": invoice.x_transportation_method,
+            #     "containerNumber": "30A1-xxxxx",
+            #     "deliveryOrderContent": invoice.x_about
+            # },
             "extAttribute": [],
-            "payments": [
-                {
-                    "paymentMethodName": payment_method_name
-                }
-            ],
-            "deliveryInfo": {},
             "itemInfo": [
 
             ],
             "discountItemInfo": [],
             "summarizeInfo": {
-                "sumOfTotalLineAmountWithoutTax": invoice.x_functional_amount_untaxed,
-                "totalAmountWithoutTax": invoice.x_functional_amount_untaxed,
-                "totalTaxAmount": invoice.x_functional_amount_tax,
-                "totalAmountWithTax": invoice.x_functional_amount_untaxed + invoice.x_functional_amount_tax,
-                "totalAmountAfterDiscount": invoice.x_functional_amount_total,
-                "totalAmountWithTaxInWords": invoice.currency_id.amount_to_text(invoice.x_functional_amount_total),
-                "discountAmount": invoice.function_sum_amount_discount
+                "sumOfTotalLineAmountWithoutTax": 0,
+                "totalAmountWithoutTax": 0,
+                "totalTaxAmount": 0,
+                "totalAmountWithTax": 0,
+                "totalAmountAfterDiscount": 0,
+                "totalAmountWithTaxInWords": u'Không đồng',
+                "discountAmount": 0
             },
             "taxBreakdowns": [
             ],
             "metadata": [],
             "customFields": [],
-            "meterReading": [],
-            # "invoiceFile": {
-            #     "fileContent": "RmlsZSBi4bqjbmcga8OqIMSRxrDhu6NjIGFkZCBsw6puIHThuqFpIHBo4bqnbiBs4bqtcCBow7NhIMSRxqFu",
-            #     "fileType": "1"
-            # }
+            "meterReading": []
         }
 
-        if buyer_tax_code == '':
+        if invoice.x_economic_contract_number:
             data['metadata'].append({
-                                        "invoiceCustomFieldId": 951,
-                                        "keyTag": "note",
+                                        "invoiceCustomFieldId": 16,
+                                        "keyTag": "economicContractNo",
                                         "valueType": "text",
-                                        "keyLabel": "ghi chú",
-                                        "stringValue": note
+                                        "keyLabel": "Căn cứ hợp đồng kinh tế số",
+                                        "stringValue": invoice.x_economic_contract_number
+                                    })
+        if invoice.x_transportation_method:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 16,
+                                        "keyTag": "vehicle",
+                                        "valueType": "text",
+                                        "keyLabel": "Phương tiện vận chuyển",
+                                        "stringValue": invoice.x_transportation_method
+                                    })
+        if invoice.x_contract_number:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 16,
+                                        "keyTag": "contractNo",
+                                        "valueType": "text",
+                                        "keyLabel": "Hợp đồng số",
+                                        "stringValue": invoice.x_contract_number
+                                    })
+        if invoice.x_about:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 16,
+                                        "keyTag": "commandDes",
+                                        "valueType": "text",
+                                        "keyLabel": "Về việc",
+                                        "stringValue": invoice.x_about
                                     })
 
         if adjustmentInvoiceType != 0:
@@ -200,23 +208,8 @@ class AccountInvoice(models.Model):
             data['generalInvoiceInfo']['additionalReferenceDesc'] = u'Điều Chỉnh'
             data['generalInvoiceInfo']['additionalReferenceDate'] = datetime.strftime(datetime.now(), '%Y-%m-%d')
 
-            if adjustmentInvoiceType == 1:
-                is_total_amount_pos = False
-                is_total_tax_amount_pos = False
-                is_total_amt_without_tax_pos = False
-                is_discount_amt_pos = False
-                if invoice.type == 'out_invoice':
-                    is_total_amount_pos = True
-                    is_total_tax_amount_pos = True
-                    is_total_amt_without_tax_pos = True
-                    is_discount_amt_pos = True
-
-                data['summarizeInfo']['isTotalAmountPos'] = is_total_amount_pos
-                data['summarizeInfo']['isTotalTaxAmountPos'] = is_total_tax_amount_pos
-                data['summarizeInfo']['isTotalAmtWithoutTaxPos'] = is_total_amt_without_tax_pos
-                data['summarizeInfo']['isDiscountAmtPos'] = is_discount_amt_pos
         index = 0
-        for line in invoice.invoice_line_ids:
+        for line in invoice.move_ids_without_package:
             index += 1
 
             item = {
@@ -224,46 +217,16 @@ class AccountInvoice(models.Model):
                      "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
                      "itemName": line.product_id.name if line.product_id and line.product_id.name else '',
                      "unitName": line.product_id.uom_id.name if line.product_id and line.product_id.uom_id else '',
-                     "unitPrice": line.price_unit,
-                     "quantity": line.quantity,
-                     "itemTotalAmountWithoutTax": line.x_functional_price_subtotal,
-                     "itemTotalAmountWithTax": line.x_total_price,
-                     "itemTotalAmountAfterDiscount": line.x_total_price,
-                     "taxPercentage": int(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) or 0,
-                     "taxAmount": line.x_rounding_price_tax,
-                     "discount": line.discount,
-                     # "discount2": line.discount2,
-                     "itemDiscount": line.total_amount_discount_line,
+                     "quantity": line.quantity_done,
+                     "itemTotalAmountWithoutTax": 0,
+                     "itemTotalAmountWithTax": 0,
+                     "taxAmount": 0,
                      "itemNote": "",
-                     "batchNo": line.x_lot_id.name if line.x_lot_id else '',
-                     "expDate": line.x_lot_id.removal_date if line.x_lot_id else '',
+                     "batchNo": "",
+                     "expDate": ""
                   }
 
-            if adjustmentInvoiceType == 1:
-                account_invoice_line_model = self.env['account.invoice.line'].sudo()
-                origin_line = account_invoice_line_model.search([('invoice_id','=',origin_invoice.id),('product_id','=',line.product_id.id)])
-
-                if len(origin_line.ids) > 0:
-                    adjustment_tax_amount = line.x_rounding_price_tax - origin_line.x_rounding_price_tax
-                    item['adjustmentTaxAmount'] = abs(adjustment_tax_amount)
-                    if adjustment_tax_amount < 0 :
-                        item['isIncreaseItem'] = False
-                    else:
-                        item['isIncreaseItem'] = True
-
             data['itemInfo'].append(item)
-
-        # compute taxBreakdowns
-        account_invoice_tax_model = self.env['account.invoice.tax']
-        taxs = account_invoice_tax_model.search([('invoice_id', '=', invoice.id)])
-        for tax in taxs:
-            item = {
-                'taxPercentage': int(tax.tax_id.amount),
-                'taxableAmount': tax.base,
-                'taxAmount': tax.amount,
-            }
-            data['taxBreakdowns'].append(item)
-
         return data
 
     @api.multi
@@ -296,20 +259,17 @@ class AccountInvoice(models.Model):
             password = user_obj.x_sinvoice_password
 
             headers = {"Content-type": "application/json"}
-            # base64string = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
-            # base64string = base64.encodebytes(str.encode('%s:%s' % (username, password)))
             base64string = base64.b64encode(bytes(username + ':' + password, "utf-8"))
             headers['Authorization'] = "Basic %s" % base64string.decode("utf-8")
             url = Constant.SINVOICE_CREATE_URI
 
             data = {}
+
+            # neu ton tai hoa don goc thi dieu chinh, neu khong thi tao moi
             if invoice.x_origin_invoice:
-                origin_invoice = self.env['account.invoice'].search([('supplier_invoice_number','=',invoice.x_origin_invoice)], order='id asc')
+                origin_invoice = self.env['stock.picking'].search([('x_supplier_invoice_number','=',invoice.x_origin_invoice)], order='id asc')
                 if len(origin_invoice.ids) > 0:
-                    if invoice.x_functional_amount_total != origin_invoice[0].x_functional_amount_total:
-                        data = self.generate_invoice_date(invoice=invoice, adjustment_type=5, username=username, adjustmentInvoiceType=1, origin_invoice=origin_invoice[0])
-                    else:
-                        data = self.generate_invoice_date(invoice=invoice, adjustment_type=5, username=username, adjustmentInvoiceType=2, origin_invoice=origin_invoice[0])
+                    data = self.generate_invoice_date(invoice=invoice, adjustment_type=5, username=username, adjustmentInvoiceType=2, origin_invoice=origin_invoice[0])
             else:
                 data = self.generate_invoice_date(invoice=invoice, adjustment_type=1, username=username, adjustmentInvoiceType=0)
 
@@ -322,7 +282,7 @@ class AccountInvoice(models.Model):
                 else:
                     output_result = output['result']
                     values = {
-                                'supplier_invoice_number': output_result['invoiceNo'],
+                                'x_supplier_invoice_number': output_result['invoiceNo'],
                                 'x_transaction_id': output_result['transactionID'],
                                 'x_invoice_status': 'status_created',
                                 'x_created_sinvoice': datetime.now(),
@@ -330,13 +290,13 @@ class AccountInvoice(models.Model):
                               }
                     invoice.update(values)
 
+
     @api.multi
     def cancel_hddt(self):
         user_obj = self.env.user
         username = user_obj.x_sinvoice_username
         password = user_obj.x_sinvoice_password
 
-        # headers = {"Content-type": "application/json"}
         headers = {}
         base64string = base64.b64encode(bytes(username + ':' + password, "utf-8"))
         headers['Authorization'] = "Basic %s" % base64string.decode("utf-8")
@@ -345,13 +305,10 @@ class AccountInvoice(models.Model):
             created_sinvoice_datetime = invoice.x_created_sinvoice.strftime('%Y%m%d%H%M%S')
             canceled_sinvoice_datetime = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
 
-            # url = Constant.SINVOICE_CANCEL_URI + '?supplierTaxCode=' + Constant.SUPPLIER_TAX_CODE + '&templateCode='+invoice.x_template_symbol.code+'&invoiceNo='+invoice.x_invoice_no+'&additionalReferenceDesc=huy&additionalReferenceDate='+canceled_sinvoice_datetime+'&strIssueDate='+created_sinvoice_datetime
-            # result = requests.get(url, headers)
-
             url = Constant.SINVOICE_CANCEL_URI
             data = {
                     "supplierTaxCode": Constant.SUPPLIER_TAX_CODE,
-                    "invoiceNo": invoice.supplier_invoice_number,
+                    "invoiceNo": invoice.x_supplier_invoice_number,
                     "strIssueDate": created_sinvoice_datetime,
                     "additionalReferenceDesc": 'huy',
                     "additionalReferenceDate": canceled_sinvoice_datetime
@@ -366,58 +323,10 @@ class AccountInvoice(models.Model):
                     raise ValidationError(str(output['errorCode']) + ": " + str(output['description']))
                 else:
                     values = {
-                        'supplier_invoice_number': False,
+                        'x_supplier_invoice_number': False,
                         'x_transaction_id': False,
                         'x_reservation_code': False,
                         'x_invoice_status': 'status_canceled',
                         'x_canceled_sinvoice': datetime.now()
                     }
                     invoice.update(values)
-
-
-class ZInvoiceInvoiceType(models.Model):
-    _name = 'z.invoice.invoice.type'
-    _description = 'Invoice Type'
-
-    name = fields.Char(string=u'Tên', require=True)
-    code = fields.Char(string=u'Mã', require=True)
-    description = fields.Char(string=u'Mô tả')
-
-
-class ZinvoiceCreateSinvoice(models.TransientModel):
-    _name = "z.invoice.create.sinvoice.wizard"
-    _description = "Create bulk sinvoice"
-
-    def _default_invoice_ids(self):
-        model_name = self._context.get('active_model')
-        invoice_ids = self._context.get('active_ids')
-        output = []
-        records = self.env[model_name].browse(invoice_ids)
-        for r in records:
-            item = {'model': model_name, 'source_id': r.id}
-            output.append((0, 0, item))
-        return output
-
-    invoice_ids = fields.One2many('z.invoice.create.sinvoice.line', 'wizard_id', string='Invoices', default=_default_invoice_ids)
-
-    @api.multi
-    def create_sinvoice(self):
-        self.ensure_one()
-        self.invoice_ids.create_sinvoice()
-        return {'type': 'ir.actions.act_window_close'}
-
-
-class ZinvoiceCreateSinvoiceLine(models.TransientModel):
-    _name = 'z.invoice.create.sinvoice.line'
-    _description = 'Invoice Line'
-
-    wizard_id = fields.Many2one('z.invoice.create.sinvoice.wizard', string='Wizard', required=True, ondelete='cascade')
-    # invoice_id = fields.Many2one('account.invoice', string='Invoice', ondelete='cascade', required=True)
-    model = fields.Char(string='Model')
-    source_id = fields.Integer(string='Ref')
-
-    @api.multi
-    def create_sinvoice(self):
-        for line in self:
-            record = self.env[line.model].browse(line.source_id)
-            record.create_hddt()
