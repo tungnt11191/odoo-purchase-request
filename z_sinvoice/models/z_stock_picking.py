@@ -41,6 +41,16 @@ class StockPicking(models.Model):
     x_transportation_method = fields.Char(string=u'Phương tiện vận chuyển', copy=False)
     x_about = fields.Char(string=u'Về việc', copy=False)
     x_contract_number = fields.Char(string=u'Hợp đồng số', copy=False)
+    x_able_to_sync = fields.Boolean('Able to sync', compute='_compute_able_to_sync')
+
+    @api.multi
+    @api.depends('picking_type_id', 'picking_type_id.x_invoice_type')
+    def _compute_able_to_sync(self):
+        for picking in self:
+            if not picking.picking_type_id or not picking.picking_type_id.x_invoice_type.id:
+                picking.x_able_to_sync = False
+            else:
+                picking.x_able_to_sync = True
 
     @api.onchange('x_template_symbol')
     def _onchange_x_template_symbol(self):
