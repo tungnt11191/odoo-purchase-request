@@ -219,6 +219,32 @@ class StockPicking(models.Model):
                                         "keyLabel": "Về việc",
                                         "stringValue": invoice.x_about
                                     })
+        if invoice.location_id:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 16,
+                                        "keyTag": "importAt",
+                                        "valueType": 'text',
+                                        "keyLabel": "Nhập tại kho",
+                                        "stringValue": invoice.location_id.name
+                                    })
+
+        if invoice.location_dest_id:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 16,
+                                        "keyTag": "exportAt",
+                                        "valueType": 'text',
+                                        "keyLabel": "Xuất tại kho",
+                                        "stringValue": invoice.location_dest_id.name
+                                    })
+
+        if invoice.scheduled_date:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 16,
+                                        "keyTag": "commandDate",
+                                        "valueType": 'date',
+                                        "keyLabel": "Ngày điều động",
+                                        "stringValue":  invoice.scheduled_date.strftime('%Y%m%d%H%M%S')
+                                    })
 
         if adjustmentInvoiceType != 0:
             data['generalInvoiceInfo']['adjustmentInvoiceType'] = adjustmentInvoiceType
@@ -244,6 +270,16 @@ class StockPicking(models.Model):
                      "batchNo": "",
                      "expDate": ""
                   }
+
+            batchNo = ''
+            expDate = ''
+            # get lot and expire date
+            for move_line in line.move_line_ids:
+                batchNo += (move_line.lot_id.name if move_line.lot_id else '' ) + ' , '
+                expDate += (move_line.lot_id.removal_date.strftime('%d-%m-%Y %H:%M:%S') if move_line.lot_id else '') + ' , '
+
+            item['batchNo'] = batchNo
+            item['expDate'] = expDate
 
             data['itemInfo'].append(item)
         return data
@@ -301,7 +337,7 @@ class StockPicking(models.Model):
                 else:
                     output_result = output['result']
                     values = {
-                                'x_supplier_invoice_number': output_result['invoiceNo'],
+                                'x_supplier_invoice_number': output_result['invoiceNo'][6:],
                                 'x_transaction_id': output_result['transactionID'],
                                 'x_invoice_status': 'status_created',
                                 'x_created_sinvoice': datetime.now(),

@@ -229,19 +229,19 @@ class AccountInvoice(models.Model):
                      "itemTotalAmountWithoutTax": line.x_functional_price_subtotal,
                      "itemTotalAmountWithTax": line.x_total_price,
                      "itemTotalAmountAfterDiscount": line.x_total_price,
-                     "taxPercentage": int(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) or 0,
+                     "taxPercentage": int(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
                      "taxAmount": line.x_rounding_price_tax,
                      "discount": line.discount,
                      # "discount2": line.discount2,
                      "itemDiscount": line.total_amount_discount_line,
                      "itemNote": "",
                      "batchNo": line.x_lot_id.name if line.x_lot_id else '',
-                     "expDate": line.x_lot_id.removal_date if line.x_lot_id else '',
+                     "expDate": line.x_lot_id.removal_date.strftime('%d-%m-%Y %H:%M:%S') if line.x_lot_id else '',
                   }
 
             if adjustmentInvoiceType == 1:
                 account_invoice_line_model = self.env['account.invoice.line'].sudo()
-                origin_line = account_invoice_line_model.search([('invoice_id','=',origin_invoice.id),('product_id','=',line.product_id.id)])
+                origin_line = account_invoice_line_model.search([('invoice_id', '=', origin_invoice.id),('product_id','=',line.product_id.id)])
 
                 if len(origin_line.ids) > 0:
                     adjustment_tax_amount = line.x_rounding_price_tax - origin_line.x_rounding_price_tax
@@ -322,7 +322,7 @@ class AccountInvoice(models.Model):
                 else:
                     output_result = output['result']
                     values = {
-                                'supplier_invoice_number': output_result['invoiceNo'],
+                                'supplier_invoice_number': output_result['invoiceNo'][6:],
                                 'x_transaction_id': output_result['transactionID'],
                                 'x_invoice_status': 'status_created',
                                 'x_created_sinvoice': datetime.now(),
