@@ -39,6 +39,7 @@ options.registry.revoslider = options.Class.extend({
     },
 });
 
+
 $(document).ready(function() {
 
     function generate_slide(){
@@ -59,32 +60,60 @@ $(document).ready(function() {
         return output;
     }
 
+//    $('.tungnt_s_slideshow').each(function () {
+//        console.log('tungnt_s_slideshow')
+//        var slideshow = this;
+//        ajax.jsonRpc("/website_slideshow/get_slideshow", 'call', {'slide_name': $(slideshow).attr('id')})
+//        .then(function (data) {
+//            console.log(data);
+//            $(slideshow).append(data);
+//
+//            $(slideshow).revolution({
+//                  sliderType:"standard",
+//                  sliderLayout:"auto",
+//                  delay:9000,
+//                  navigation: {
+//                      arrows:{enable:true}
+//                  },
+//                  gridwidth:900,
+//                  gridheight:720
+//                });
+//        });
+//
+//    });
+
+});
+
+});
+$(document).ready(function() {
     $('.tungnt_s_slideshow').each(function () {
-        console.log('tungnt_s_slideshow')
         var slideshow = this;
-            // display the reduction from the pricelist in function of the quantity
-        ajax.jsonRpc("/website_slideshow/get_slideshow", 'call', {'slide_name': $(slideshow).attr('id')})
-        .then(function (data) {
-            console.log(data);
-            $(slideshow).append(data);
+        console.log('tungnt_s_slideshow');
+        $.ajax({
+                    type: "Post",
+                    dataType: 'json',
+                    url: '/website_slideshow/get_slideshow',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({'jsonrpc': "2.0", 'method': "call", "params": {'slide_name': $(slideshow).attr('id')}}),
+                    success: function (data) {
+                         $(slideshow).append(data.result);
 
-            $(slideshow).revolution({
-                  sliderType:"standard",
-                  sliderLayout:"auto",
-                  delay:9000,
-                  navigation: {
-                      arrows:{enable:true}
-                  },
-                  gridwidth:900,
-                  gridheight:720
+                            $(slideshow).revolution({
+                                  sliderType:"standard",
+                                  sliderLayout:"auto",
+                                  delay:9000,
+                                  navigation: {
+                                      arrows:{enable:true}
+                                  },
+                                  gridwidth:900,
+                                  gridheight:720
+                                });
+                    },
+                    error: function(data){
+                        console.log("ERROR ", data);
+                    }
                 });
-        });
-
-    });
+    })
 
 });
-
-
-});
-
 
