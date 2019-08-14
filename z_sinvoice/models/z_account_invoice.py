@@ -193,6 +193,24 @@ class AccountInvoice(models.Model):
                                         "stringValue": note
                                     })
 
+        if invoice.x_origin:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 953,
+                                        "keyTag": "orderNo",
+                                        "valueType": "text",
+                                        "keyLabel": "đơn đặt hàng",
+                                        "stringValue": invoice.x_origin
+                                    })
+
+        if invoice.origin:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 954,
+                                        "keyTag": "orderPaper",
+                                        "valueType": "text",
+                                        "keyLabel": "phiếu giao hàng",
+                                        "stringValue": invoice.origin
+                                    })
+
         if adjustmentInvoiceType != 0:
             data['generalInvoiceInfo']['adjustmentInvoiceType'] = adjustmentInvoiceType
             data['generalInvoiceInfo']['originalInvoiceId'] = invoice.x_origin_invoice
@@ -229,7 +247,7 @@ class AccountInvoice(models.Model):
                      "itemTotalAmountWithoutTax": line.x_functional_price_subtotal,
                      "itemTotalAmountWithTax": line.x_total_price,
                      "itemTotalAmountAfterDiscount": line.x_total_price,
-                     "taxPercentage": int(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
+                     "taxPercentage": round(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
                      "taxAmount": line.x_rounding_price_tax,
                      "discount": line.discount,
                      # "discount2": line.discount2,
@@ -351,7 +369,7 @@ class AccountInvoice(models.Model):
             url = Constant.SINVOICE_CANCEL_URI
             data = {
                     "supplierTaxCode": Constant.SUPPLIER_TAX_CODE,
-                    "invoiceNo": invoice.supplier_invoice_number,
+                    "invoiceNo": invoice.x_invoice_symbol+invoice.supplier_invoice_number,
                     "strIssueDate": created_sinvoice_datetime,
                     "additionalReferenceDesc": 'huy',
                     "additionalReferenceDate": canceled_sinvoice_datetime

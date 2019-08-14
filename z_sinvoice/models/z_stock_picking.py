@@ -363,7 +363,7 @@ class StockPicking(models.Model):
             url = Constant.SINVOICE_CANCEL_URI
             data = {
                     "supplierTaxCode": Constant.SUPPLIER_TAX_CODE,
-                    "invoiceNo": invoice.x_supplier_invoice_number,
+                    "invoiceNo": invoice.x_invoice_symbol+invoice.x_supplier_invoice_number,
                     "strIssueDate": created_sinvoice_datetime,
                     "additionalReferenceDesc": 'huy',
                     "additionalReferenceDate": canceled_sinvoice_datetime
