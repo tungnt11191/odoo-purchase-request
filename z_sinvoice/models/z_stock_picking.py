@@ -261,7 +261,7 @@ class StockPicking(models.Model):
                      "lineNumber": index,
                      "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
                      "itemName": line.product_id.name if line.product_id and line.product_id.name else '',
-                     "unitName": line.product_id.uom_id.name if line.product_id and line.product_id.uom_id else '',
+                     "unitName": line.uom_id.name if line.uom_id else '',
                      "quantity": line.quantity_done,
                      "itemTotalAmountWithoutTax": 0,
                      "itemTotalAmountWithTax": 0,
@@ -275,8 +275,8 @@ class StockPicking(models.Model):
             expDate = ''
             # get lot and expire date
             for move_line in line.move_line_ids:
-                batchNo += (move_line.lot_id.name if move_line.lot_id else '' ) + ' , '
-                expDate += (move_line.lot_id.removal_date.strftime('%d-%m-%Y %H:%M:%S') if move_line.lot_id else '') + ' , '
+                batchNo += (move_line.lot_id.name if move_line.lot_id else '') + ' , '
+                expDate += (move_line.lot_id.removal_date.strftime('%d-%m-%Y') if move_line.lot_id else '') + ' , '
 
             item['batchNo'] = batchNo
             item['expDate'] = expDate

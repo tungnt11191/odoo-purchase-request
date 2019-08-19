@@ -241,7 +241,7 @@ class AccountInvoice(models.Model):
                      "lineNumber": index,
                      "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
                      "itemName": line.product_id.name if line.product_id and line.product_id.name else '',
-                     "unitName": line.product_id.uom_id.name if line.product_id and line.product_id.uom_id else '',
+                     "unitName": line.uom_id.name if line.uom_id else '',
                      "unitPrice": line.price_unit,
                      "quantity": line.quantity,
                      "itemTotalAmountWithoutTax": line.x_functional_price_subtotal,
@@ -254,7 +254,7 @@ class AccountInvoice(models.Model):
                      "itemDiscount": line.total_amount_discount_line,
                      "itemNote": "",
                      "batchNo": line.x_lot_id.name if line.x_lot_id else '',
-                     "expDate": line.x_lot_id.removal_date.strftime('%d-%m-%Y %H:%M:%S') if line.x_lot_id else '',
+                     "expDate": line.x_lot_id.removal_date.strftime('%d-%m-%Y ') if line.x_lot_id else '',
                   }
 
             if adjustmentInvoiceType == 1:
