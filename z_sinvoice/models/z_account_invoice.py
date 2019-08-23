@@ -94,9 +94,9 @@ class AccountInvoice(models.Model):
         buyer_email = invoice.partner_id.email if invoice.partner_id and invoice.partner_id.email else ''
         # buyer_bank_name = "Ngân hàng Quân đội MB"
         # buyer_bank_account = "01578987871236547"
-        buyer_id_no = "8888899999"
-        buyer_id_type = "1" #1 or 3
-        buyer_code = "832472343b_b"
+        buyer_id_no = "8888899999"  # so CMT
+        buyer_id_type = "1"  #1 or 3
+        buyer_code = invoice.partner_id.ref if invoice.partner_id and invoice.partner_id.ref else ''
         buyer_birthdate = invoice.partner_id.birthdate.strftime('%Y-%m-%d') if invoice.partner_id and invoice.partner_id.birthdate else ''
         # buyer information
 
@@ -138,8 +138,8 @@ class AccountInvoice(models.Model):
                 "buyerEmail": buyer_email,
                 # "buyerBankName": buyer_bank_name,
                 # "buyerBankAccount": buyer_bank_account,
-                "buyerIdNo": buyer_id_no,
-                "buyerIdType": buyer_id_type,
+                # "buyerIdNo": buyer_id_no,
+                # "buyerIdType": buyer_id_type,
                 "buyerCode": buyer_code,
                 "buyerBirthDay": buyer_birthdate
             },
@@ -201,6 +201,16 @@ class AccountInvoice(models.Model):
                                         "keyLabel": "đơn đặt hàng",
                                         "stringValue": invoice.x_origin
                                     })
+            sale_order = self.env['sale.order'].search([('name', '=', invoice.x_origin)])
+            if len(sale_order.ids) > 0:
+                payment_method_name = sale_order.payment_term_id.name if invoice.payment_term_id else ''
+                data['metadata'].append({
+                    "invoiceCustomFieldId": 1681,
+                    "keyTag": "paymentDes",
+                    "valueType": "text",
+                    "keyLabel": "diễn giải hình thức thanh toán",
+                    "stringValue": payment_method_name
+                })
 
         if invoice.origin:
             data['metadata'].append({
@@ -250,7 +260,7 @@ class AccountInvoice(models.Model):
                      "taxPercentage": round(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
                      "taxAmount": line.x_rounding_price_tax,
                      "discount": line.discount,
-                     # "discount2": line.discount2,
+                     "discount2": line.discount2,
                      "itemDiscount": line.total_amount_discount_line,
                      "itemNote": "",
                      "batchNo": line.x_lot_id.name if line.x_lot_id else '',
@@ -272,9 +282,9 @@ class AccountInvoice(models.Model):
             data['itemInfo'].append(item)
 
         # compute taxBreakdowns
-        account_invoice_tax_model = self.env['account.invoice.tax']
-        taxs = account_invoice_tax_model.search([('invoice_id', '=', invoice.id)])
-        for tax in taxs:
+        # account_invoice_tax_model = self.env['account.invoice.tax']
+        # taxs = account_invoice_tax_model.search([('invoice_id', '=', invoice.id)])
+        for tax in invoice.tax_line_ids:
             item = {
                 'taxPercentage': int(tax.tax_id.amount),
                 'taxableAmount': tax.base,

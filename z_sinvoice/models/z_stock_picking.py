@@ -261,7 +261,7 @@ class StockPicking(models.Model):
                      "lineNumber": index,
                      "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
                      "itemName": line.product_id.name if line.product_id and line.product_id.name else '',
-                     "unitName": line.uom_id.name if line.uom_id else '',
+                     "unitName": line.product_uom.name if line.product_uom else '',
                      "quantity": line.quantity_done,
                      "itemTotalAmountWithoutTax": 0,
                      "itemTotalAmountWithTax": 0,
