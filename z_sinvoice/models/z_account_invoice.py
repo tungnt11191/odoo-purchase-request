@@ -92,12 +92,17 @@ class AccountInvoice(models.Model):
         buyer_country_code = '84'
         buyer_phone_number = invoice.partner_id.mobile if invoice.partner_id and invoice.partner_id.mobile else ''
         buyer_email = invoice.partner_id.email if invoice.partner_id and invoice.partner_id.email else ''
-        # buyer_bank_name = "Ngân hàng Quân đội MB"
-        # buyer_bank_account = "01578987871236547"
+
         buyer_id_no = "8888899999"  # so CMT
         buyer_id_type = "1"  #1 or 3
         buyer_code = invoice.partner_id.ref if invoice.partner_id and invoice.partner_id.ref else ''
         buyer_birthdate = invoice.partner_id.birthdate.strftime('%Y-%m-%d') if invoice.partner_id and invoice.partner_id.birthdate else ''
+
+        buyer_bank_name = ""
+        buyer_bank_account = ""
+        if invoice.partner_id and len(invoice.partner_id.bank_ids) > 0:
+            buyer_bank_name = invoice.partner_id.bank_ids[0].acc_number
+            buyer_bank_account = invoice.partner_id.bank_ids[0].acc_number
         # buyer information
 
         # seller information
@@ -136,8 +141,8 @@ class AccountInvoice(models.Model):
                 "buyerPhoneNumber": buyer_phone_number,
                 "buyerFaxNumber": buyer_phone_number,
                 "buyerEmail": buyer_email,
-                # "buyerBankName": buyer_bank_name,
-                # "buyerBankAccount": buyer_bank_account,
+                "buyerBankName": buyer_bank_name,
+                "buyerBankAccount": buyer_bank_account,
                 # "buyerIdNo": buyer_id_no,
                 # "buyerIdType": buyer_id_type,
                 "buyerCode": buyer_code,
@@ -166,10 +171,10 @@ class AccountInvoice(models.Model):
             "discountItemInfo": [],
             "summarizeInfo": {
                 "sumOfTotalLineAmountWithoutTax": invoice.x_functional_amount_untaxed,
-                "totalAmountWithoutTax": invoice.x_functional_amount_untaxed,
+                # "totalAmountWithoutTax": invoice.x_functional_amount_untaxed,
                 "totalTaxAmount": invoice.x_functional_amount_tax,
                 "totalAmountWithTax": invoice.x_functional_amount_untaxed + invoice.x_functional_amount_tax,
-                "totalAmountAfterDiscount": invoice.x_functional_amount_total,
+                "totalAmountAfterDiscount": invoice.x_functional_amount_untaxed,
                 "totalAmountWithTaxInWords": invoice.currency_id.amount_to_text(invoice.x_functional_amount_total),
                 "discountAmount": invoice.function_sum_amount_discount
             },
@@ -195,30 +200,30 @@ class AccountInvoice(models.Model):
 
         if invoice.x_origin:
             data['metadata'].append({
-                                        "invoiceCustomFieldId": 953,
-                                        "keyTag": "orderNo",
-                                        "valueType": "text",
-                                        "keyLabel": "đơn đặt hàng",
-                                        "stringValue": invoice.x_origin
-                                    })
-            sale_order = self.env['sale.order'].search([('name', '=', invoice.x_origin)])
-            if len(sale_order.ids) > 0:
-                payment_method_name = sale_order.payment_term_id.name if invoice.payment_term_id else ''
-                data['metadata'].append({
-                    "invoiceCustomFieldId": 1681,
-                    "keyTag": "paymentDes",
-                    "valueType": "text",
-                    "keyLabel": "diễn giải hình thức thanh toán",
-                    "stringValue": payment_method_name
-                })
-
-        if invoice.origin:
-            data['metadata'].append({
                                         "invoiceCustomFieldId": 954,
                                         "keyTag": "orderPaper",
                                         "valueType": "text",
                                         "keyLabel": "phiếu giao hàng",
-                                        "stringValue": invoice.origin
+                                        "stringValue": invoice.x_origin
+                                    })
+
+        if invoice.x_sale_order_origin:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 953,
+                                        "keyTag": "orderNo",
+                                        "valueType": "text",
+                                        "keyLabel": "đơn đặt hàng",
+                                        "stringValue": invoice.x_sale_order_origin
+                                    })
+
+        if invoice.payment_term_id:
+            payment_method_name = invoice.payment_term_id.name if invoice.payment_term_id else ''
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 1681,
+                                        "keyTag": "paymentDes",
+                                        "valueType": "text",
+                                        "keyLabel": "diễn giải hình thức thanh toán",
+                                        "stringValue": payment_method_name
                                     })
 
         if adjustmentInvoiceType != 0:
@@ -243,10 +248,13 @@ class AccountInvoice(models.Model):
                 data['summarizeInfo']['isTotalTaxAmountPos'] = is_total_tax_amount_pos
                 data['summarizeInfo']['isTotalAmtWithoutTaxPos'] = is_total_amt_without_tax_pos
                 data['summarizeInfo']['isDiscountAmtPos'] = is_discount_amt_pos
+
         index = 0
+        sumOfTotalLineAmountWithoutTax = 0
         for line in invoice.invoice_line_ids:
             index += 1
-
+            itemTotalAmountWithoutTax = round(line.price_unit * line.quantity)
+            sumOfTotalLineAmountWithoutTax += itemTotalAmountWithoutTax
             item = {
                      "lineNumber": index,
                      "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
@@ -254,11 +262,12 @@ class AccountInvoice(models.Model):
                      "unitName": line.uom_id.name if line.uom_id else '',
                      "unitPrice": line.price_unit,
                      "quantity": line.quantity,
-                     "itemTotalAmountWithoutTax": line.x_functional_price_subtotal,
-                     "itemTotalAmountWithTax": line.x_total_price,
-                     "itemTotalAmountAfterDiscount": line.x_total_price,
+                     # "itemTotalAmountWithoutTax": line.x_functional_price_subtotal,
+                     "itemTotalAmountWithoutTax": itemTotalAmountWithoutTax,
+                     "itemTotalAmountWithTax": round(line.x_total_price),
+                     "itemTotalAmountAfterDiscount": round(line.x_total_price),
                      "taxPercentage": round(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
-                     "taxAmount": line.x_rounding_price_tax,
+                     "taxAmount": round(line.x_rounding_price_tax),
                      "discount": line.discount,
                      "discount2": line.discount2,
                      "itemDiscount": line.total_amount_discount_line,
@@ -266,6 +275,7 @@ class AccountInvoice(models.Model):
                      "batchNo": line.x_lot_id.name if line.x_lot_id else '',
                      "expDate": line.x_lot_id.removal_date.strftime('%d-%m-%Y ') if line.x_lot_id else '',
                   }
+
 
             if adjustmentInvoiceType == 1:
                 account_invoice_line_model = self.env['account.invoice.line'].sudo()
@@ -280,7 +290,7 @@ class AccountInvoice(models.Model):
                         item['isIncreaseItem'] = True
 
             data['itemInfo'].append(item)
-
+        data['summarizeInfo']['totalAmountWithoutTax'] = sumOfTotalLineAmountWithoutTax
         # compute taxBreakdowns
         # account_invoice_tax_model = self.env['account.invoice.tax']
         # taxs = account_invoice_tax_model.search([('invoice_id', '=', invoice.id)])

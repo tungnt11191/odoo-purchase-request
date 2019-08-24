@@ -1,0 +1,272 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* z_sinvoice_for_dap
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-08-01 07:29+0000\n"
+"PO-Revision-Date: 2019-08-01 07:29+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model,name:z_sinvoice_for_dap.model_account_invoice
+msgid "Account Invoice Paid Amounts"
+msgstr "Số tiền đã thanh toán"
+
+#. module: z_sinvoice_for_dap
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.sinvoice_account_invoice_view_form_inherit
+msgid "Are you sure you?"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.z_invoice_create_sinvoice_wizard_view
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: z_sinvoice_for_dap
+#: selection:account.invoice,x_invoice_status:0
+msgid "Chưa tạo trên SINVOICE"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model,name:z_sinvoice_for_dap.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: z_sinvoice_for_dap
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.z_invoice_create_sinvoice_wizard_view
+msgid "Create"
+msgstr "Tạo"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model,name:z_sinvoice_for_dap.model_z_invoice_create_sinvoice_wizard
+msgid "Create bulk sinvoice"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_line__create_uid
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_wizard__create_uid
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type__create_uid
+msgid "Created by"
+msgstr "Được tạo bởi"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_line__create_date
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_wizard__create_date
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type__create_date
+msgid "Created on"
+msgstr "Thời điểm tạo"
+
+#. module: z_sinvoice_for_dap
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.z_sinvoice_view_company_form_inherit
+msgid "Cấu hình HDDT"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_line__display_name
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_wizard__display_name
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: z_sinvoice_for_dap
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.z_invoice_create_sinvoice_wizard_view
+msgid "Hóa đơn chưa tạo hóa đơn điện tử hoặc không ở trạng thái hủy"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_account_invoice__x_origin_invoice
+msgid "Hóa đơn gốc(Hóa đơn điều chỉnh)"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.sinvoice_account_invoice_view_form_inherit
+msgid "Hủy HĐĐT"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_line__id
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_wizard__id
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type__id
+msgid "ID"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_account_invoice__x_transaction_id
+msgid "ID giao dịch HĐĐT"
+msgstr "Mã giao dịch HĐĐT"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_line__invoice_id
+msgid "Invoice"
+msgstr "Số chứng từ"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model,name:z_sinvoice_for_dap.model_z_invoice_create_sinvoice_line
+msgid "Invoice Line"
+msgstr "Chi tiết hóa đơn"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model,name:z_sinvoice_for_dap.model_x_invoice_template
+msgid "Invoice Template"
+msgstr "Mẫu số hóa đơn"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model,name:z_sinvoice_for_dap.model_z_invoice_invoice_type
+msgid "Invoice Type"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_wizard__invoice_ids
+msgid "Invoices"
+msgstr "Các hóa đơn"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_line____last_update
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_wizard____last_update
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type____last_update
+msgid "Last Modified on"
+msgstr "Sửa lần cuối vào"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_line__write_uid
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_wizard__write_uid
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_line__write_date
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_wizard__write_date
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_x_invoice_template__x_invoice_type
+msgid "Loại hóa đơn"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type__code
+msgid "Mã"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_res_company__x_ma_loai_hoa_don
+msgid "Mã loại hóa đơn"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_res_company__x_loai_ky_gui
+msgid "Mã loại ký gửi"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_res_company__x_ma_loai_van_chuyen_noi_bo
+msgid "Mã loại vận chuyển nội bộ"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_res_company__x_ma_mau_hoa_don
+msgid "Mã mẫu hóa đơn"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_res_company__x_ma_mau_ky_gui
+msgid "Mã mẫu ký gửi"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_res_company__x_ma_mau_van_chuyen_noi_bo
+msgid "Mã mẫu vận chuyển nội bộ"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type__description
+msgid "Mô tả"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_res_users__x_sinvoice_password
+msgid "Mật khẩu"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_account_invoice__x_canceled_sinvoice
+msgid "Ngày hủy HĐĐT"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_account_invoice__x_created_sinvoice
+msgid "Ngày tạo HĐĐT"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_account_invoice__x_reservation_code
+msgid "Reservation Code"
+msgstr "Mã đặt trước"
+
+#. module: z_sinvoice_for_dap
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.sinvoice_account_invoice_view_form_inherit
+msgid "Thông Tin HĐĐT"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_account_invoice__x_invoice_status
+msgid "Trạng thái SINVOICE"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.z_sinvoice_view_users_form_inherit
+msgid "Tài Khoản HDDT"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_res_users__x_sinvoice_username
+msgid "Tài khoản đăng nhập"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_invoice_type__name
+msgid "Tên"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.actions.act_window,name:z_sinvoice_for_dap.z_invoice_create_sinvoic_wizard_action
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.sinvoice_account_invoice_view_form_inherit
+msgid "Tạo HĐĐT"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model,name:z_sinvoice_for_dap.model_res_users
+msgid "Users"
+msgstr "Người dùng"
+
+#. module: z_sinvoice_for_dap
+#: model:ir.model.fields,field_description:z_sinvoice_for_dap.field_z_invoice_create_sinvoice_line__wizard_id
+msgid "Wizard"
+msgstr "Đồ thuật"
+
+#. module: z_sinvoice_for_dap
+#: model_terms:ir.ui.view,arch_db:z_sinvoice_for_dap.z_invoice_create_sinvoice_wizard_view
+msgid "Xác Nhận Tạo HĐĐT"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: selection:account.invoice,x_invoice_status:0
+msgid "Đã hủy trên SINVOICE"
+msgstr ""
+
+#. module: z_sinvoice_for_dap
+#: selection:account.invoice,x_invoice_status:0
+msgid "Đã tạo trên SINVOICE"
+msgstr ""
+
