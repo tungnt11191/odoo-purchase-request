@@ -254,22 +254,25 @@ class StockPicking(models.Model):
             data['generalInvoiceInfo']['additionalReferenceDate'] = datetime.strftime(datetime.now(), '%Y-%m-%d')
 
         index = 0
+        sumOfTotalLineAmountWithoutTax = 0
         for line in invoice.move_ids_without_package:
             index += 1
-
+            itemTotalAmountWithoutTax = round(line.price_unit * abs(line.quantity_done))
+            sumOfTotalLineAmountWithoutTax += itemTotalAmountWithoutTax
             item = {
-                     "lineNumber": index,
-                     "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
-                     "itemName": line.product_id.name if line.product_id and line.product_id.name else '',
-                     "unitName": line.product_uom.name if line.product_uom else '',
-                     "quantity": line.quantity_done,
-                     "itemTotalAmountWithoutTax": 0,
-                     "itemTotalAmountWithTax": 0,
-                     "taxAmount": 0,
-                     "itemNote": "",
-                     "batchNo": "",
-                     "expDate": ""
-                  }
+                        "lineNumber": index,
+                        "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
+                        "itemName": line.product_id.name if line.product_id and line.product_id.name else '',
+                        "unitName": line.product_uom.name if line.product_uom else '',
+                        "quantity": line.quantity_done,
+                        "unitPrice": line.price_unit,
+                        "itemTotalAmountWithoutTax": itemTotalAmountWithoutTax,
+                        "itemTotalAmountWithTax": itemTotalAmountWithoutTax,
+                        "taxAmount": 0,
+                        "itemNote": "",
+                        "batchNo": "",
+                        "expDate": ""
+                    }
 
             batchNo = ''
             expDate = ''
@@ -282,6 +285,9 @@ class StockPicking(models.Model):
             item['expDate'] = expDate
 
             data['itemInfo'].append(item)
+        data['summarizeInfo']['totalAmountWithoutTax'] = sumOfTotalLineAmountWithoutTax
+        data['summarizeInfo']['totalAmountWithTax'] = sumOfTotalLineAmountWithoutTax
+
         return data
 
     @api.multi
