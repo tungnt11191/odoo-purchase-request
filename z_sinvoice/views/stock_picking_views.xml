@@ -26,13 +26,18 @@
                     <page string="Thông Tin HĐĐT" attrs="{'invisible': [('x_able_to_sync', '=', False)]}" >
                         <group>
                             <group>
+                                <field name="name" string="Căn cứ lệnh điều động số"/>
                                 <field name="x_economic_contract_number"/>
                                 <field name="x_transportation_method"/>
+                                <field name="x_transporter"/>
                                 <field name="x_able_to_sync" invisible="1"/>
                             </group>
                             <group>
                                 <field name="x_about"/>
                                 <field name="x_contract_number"/>
+                                <field name="date_done"/>
+                                <field name="location_id"/>
+                                <field name="location_dest_id"/>
                             </group>
                         </group>
                         <group>
@@ -47,7 +52,7 @@
                                 <field name="x_invoice_status" readonly="1"/>
                                 <field name="x_created_sinvoice" readonly="1"/>
                                 <field name="x_canceled_sinvoice" readonly="1"/>
-                                <field name="x_reservation_code" readonly="1"/>
+                                <field name="x_reservation_code" readonly="1" string="Mã bí mật"/>
                                 <field name="x_transaction_id" readonly="1"/>
                             </group>
                         </group>

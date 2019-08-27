@@ -63,7 +63,6 @@ class AccountInvoice(models.Model):
         if invoice.x_transaction_id:
             valid = False
             message = u'Hóa đơn đã được tạo hóa đơn điện tử'
-
         return valid, message
 
     # adjustmentType :    1 - hoa don goc
@@ -78,24 +77,25 @@ class AccountInvoice(models.Model):
         payment_method_name = "TM/CK"
 
         # buyer information
-        buyer_name = invoice.partner_id.name if invoice.partner_id else ''
+        buyer_name = invoice.x_purchase_person.name if invoice.x_purchase_person else ''
+        buyer_legal_name = invoice.x_vat_partner if invoice.x_vat_partner else ''
         buyer_tax_code = invoice.x_partner_tax_code.strip() if invoice.x_partner_tax_code else ''
 
         if not self.validate_tax_code(buyer_tax_code):
             buyer_tax_code = ''
             note = u'Người mua không cung cấp mã số thuế'
 
-        buyer_address_line = invoice.partner_id.street if invoice.partner_id and invoice.partner_id.street else ''
-        buyer_district_name = invoice.partner_id.x_district_id.x_name if invoice.partner_id and invoice.partner_id.x_district_id else ''
+        buyer_address_line = invoice.x_partner_address if invoice.partner_id else ''
+        # buyer_district_name = invoice.partner_id.x_district_id.x_name if invoice.partner_id and invoice.partner_id.x_district_id else ''
         # buyer_postal_code = '2342324323'
-        buyer_city_name = invoice.partner_id.state_id.name if invoice.partner_id and invoice.partner_id.state_id else ''
+        # buyer_city_name = invoice.partner_id.state_id.name if invoice.partner_id and invoice.partner_id.state_id else ''
         buyer_country_code = '84'
-        buyer_phone_number = invoice.partner_id.mobile if invoice.partner_id and invoice.partner_id.mobile else ''
-        buyer_email = invoice.partner_id.email if invoice.partner_id and invoice.partner_id.email else ''
+        # buyer_phone_number = invoice.partner_id.mobile if invoice.partner_id and invoice.partner_id.mobile else ''
+        # buyer_email = invoice.partner_id.email if invoice.partner_id and invoice.partner_id.email else ''
 
         buyer_id_no = "8888899999"  # so CMT
         buyer_id_type = "1"  #1 or 3
-        buyer_code = invoice.partner_id.ref if invoice.partner_id and invoice.partner_id.ref else ''
+        buyer_code = invoice.x_purchase_person.ref if invoice.x_purchase_person and invoice.x_purchase_person.ref else ''
         buyer_birthdate = invoice.partner_id.birthdate.strftime('%Y-%m-%d') if invoice.partner_id and invoice.partner_id.birthdate else ''
 
         buyer_bank_name = ""
@@ -131,16 +131,16 @@ class AccountInvoice(models.Model):
             },
             "buyerInfo": {
                 "buyerName": buyer_name,
-                "buyerLegalName": buyer_name,
+                "buyerLegalName": buyer_legal_name,
                 "buyerTaxCode": buyer_tax_code,
                 "buyerAddressLine": buyer_address_line,
                 # "buyerPostalCode": buyer_postal_code,
-                "buyerDistrictName": buyer_district_name,
-                "buyerCityName": buyer_city_name,
-                "buyerCountryCode": buyer_country_code,
-                "buyerPhoneNumber": buyer_phone_number,
-                "buyerFaxNumber": buyer_phone_number,
-                "buyerEmail": buyer_email,
+                # "buyerDistrictName": buyer_district_name,
+                # "buyerCityName": buyer_city_name,
+                # "buyerCountryCode": buyer_country_code,
+                # "buyerPhoneNumber": buyer_phone_number,
+                # "buyerFaxNumber": buyer_phone_number,
+                # "buyerEmail": buyer_email,
                 "buyerBankName": buyer_bank_name,
                 "buyerBankAccount": buyer_bank_account,
                 # "buyerIdNo": buyer_id_no,

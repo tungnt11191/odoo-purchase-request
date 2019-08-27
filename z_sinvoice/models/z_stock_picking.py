@@ -34,13 +34,19 @@ class StockPicking(models.Model):
     ], string=u'Trạng thái SINVOICE', default='status_not_sync', readonly=True, copy=False)
     x_created_sinvoice = fields.Datetime(string=u'Ngày tạo HĐĐT', copy=False)
     x_canceled_sinvoice = fields.Datetime(string=u'Ngày hủy HĐĐT', copy=False)
-    x_reservation_code = fields.Char(u"Reservation Code", copy=False)
+    x_reservation_code = fields.Char("Reservation Code", copy=False)
     x_origin_invoice = fields.Char(string=u'Hóa đơn gốc(Hóa đơn điều chỉnh)', compute='_compute_origin_invoice', store=True, copy=False)
     x_economic_contract_number = fields.Char(string=u'Hợp đồng kinh tế số', copy=False)
     x_transportation_method = fields.Char(string=u'Phương tiện vận chuyển', copy=False)
     x_about = fields.Char(string=u'Về việc', copy=False)
     x_contract_number = fields.Char(string=u'Hợp đồng số', copy=False)
+    x_transporter = fields.Char(string=u'Người vận chuyển', copy=False)
     x_able_to_sync = fields.Boolean('Able to sync', compute='_compute_able_to_sync')
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.partner_id and self.partner_id.vat:
+            self.x_partner_tax_code = self.partner_id.vat
 
     @api.multi
     @api.depends('picking_type_id', 'picking_type_id.x_invoice_type')
@@ -84,6 +90,10 @@ class StockPicking(models.Model):
             valid = False
             message = u'Không có chức năng đồng bộ hóa đơn điện tử tại phiếu kho'
 
+        # if not invoice.x_purchase_person:
+        #     valid = False
+        #     message = u'Người mua để trống'
+
         return valid, message
 
 
@@ -104,14 +114,17 @@ class StockPicking(models.Model):
         # transporter information
 
         # buyer information
-        buyer_name = invoice.partner_id.name if invoice.partner_id else ''
+        buyer_name = invoice.x_transporter if invoice.x_transporter else ''
+        if buyer_name == '':
+            buyer_name = invoice.partner_id.name if invoice.partner_id else ''
+
         buyer_tax_code = invoice.x_partner_tax_code.strip() if invoice.x_partner_tax_code else ''
-        buyer_address_line = invoice.partner_id.street if invoice.partner_id and invoice.partner_id.street else ''
-        buyer_district_name = invoice.partner_id.x_district_id.x_name if invoice.partner_id and invoice.partner_id.x_district_id else ''
-        buyer_city_name = invoice.partner_id.state_id.name if invoice.partner_id and invoice.partner_id.state_id else ''
-        buyer_country_code = '84'
-        buyer_phone_number = invoice.partner_id.mobile if invoice.partner_id and invoice.partner_id.mobile else ''
-        buyer_email = invoice.partner_id.email if invoice.partner_id and invoice.partner_id.email else ''
+        buyer_address_line = invoice.x_address if invoice.x_address else ''
+        # buyer_district_name = invoice.partner_id.x_district_id.x_name if invoice.partner_id and invoice.partner_id.x_district_id else ''
+        # buyer_city_name = invoice.partner_id.state_id.name if invoice.partner_id and invoice.partner_id.state_id else ''
+        # buyer_country_code = '84'
+        # buyer_phone_number = invoice.partner_id.mobile if invoice.partner_id and invoice.partner_id.mobile else ''
+        # buyer_email = invoice.partner_id.email if invoice.partner_id and invoice.partner_id.email else ''
         # buyer information
 
         # seller information
@@ -140,12 +153,12 @@ class StockPicking(models.Model):
                 "buyerLegalName": buyer_name,
                 "buyerTaxCode": buyer_tax_code,
                 "buyerAddressLine": buyer_address_line,
-                "buyerDistrictName": buyer_district_name,
-                "buyerCityName": buyer_city_name,
-                "buyerCountryCode": buyer_country_code,
-                "buyerPhoneNumber": buyer_phone_number,
-                "buyerFaxNumber": buyer_phone_number,
-                "buyerEmail": buyer_email,
+                # "buyerDistrictName": buyer_district_name,
+                # "buyerCityName": buyer_city_name,
+                # "buyerCountryCode": buyer_country_code,
+                # "buyerPhoneNumber": buyer_phone_number,
+                # "buyerFaxNumber": buyer_phone_number,
+                # "buyerEmail": buyer_email,
             },
             "sellerInfo": {
                 "sellerCode": seller_code,
@@ -205,12 +218,21 @@ class StockPicking(models.Model):
                                     })
         if invoice.x_contract_number:
             data['metadata'].append({
-                                        "invoiceCustomFieldId": 16,
+                                        "invoiceCustomFieldId": 791,
                                         "keyTag": "contractNo",
                                         "valueType": "text",
                                         "keyLabel": "Hợp đồng số",
                                         "stringValue": invoice.x_contract_number
                                     })
+            # hddt sai chinh ta
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 791,
+                                        "keyTag": "contactNo",
+                                        "valueType": "text",
+                                        "keyLabel": "Hợp đồng số",
+                                        "stringValue": invoice.x_contract_number
+                                    })
+
         if invoice.x_about:
             data['metadata'].append({
                                         "invoiceCustomFieldId": 16,
@@ -225,7 +247,7 @@ class StockPicking(models.Model):
                                         "keyTag": "importAt",
                                         "valueType": 'text',
                                         "keyLabel": "Nhập tại kho",
-                                        "stringValue": invoice.location_id.name
+                                        "stringValue": invoice.location_id.display_name
                                     })
 
         if invoice.location_dest_id:
@@ -234,16 +256,25 @@ class StockPicking(models.Model):
                                         "keyTag": "exportAt",
                                         "valueType": 'text',
                                         "keyLabel": "Xuất tại kho",
-                                        "stringValue": invoice.location_dest_id.name
+                                        "stringValue": invoice.location_dest_id.display_name
                                     })
 
-        if invoice.scheduled_date:
+        if invoice.date_done:
             data['metadata'].append({
                                         "invoiceCustomFieldId": 16,
                                         "keyTag": "commandDate",
                                         "valueType": 'date',
                                         "keyLabel": "Ngày điều động",
-                                        "stringValue":  invoice.scheduled_date.strftime('%Y%m%d%H%M%S')
+                                        "stringValue":  invoice.date_done.strftime('%Y%m%d%H%M%S')
+                                    })
+
+        if invoice.name:
+            data['metadata'].append({
+                                        "invoiceCustomFieldId": 16,
+                                        "keyTag": "commandNo",
+                                        "valueType": 'text',
+                                        "keyLabel": "Lệnh điều động số",
+                                        "stringValue":  invoice.name
                                     })
 
         if adjustmentInvoiceType != 0:
@@ -257,15 +288,15 @@ class StockPicking(models.Model):
         sumOfTotalLineAmountWithoutTax = 0
         for line in invoice.move_ids_without_package:
             index += 1
-            itemTotalAmountWithoutTax = round(line.price_unit * abs(line.quantity_done))
+            itemTotalAmountWithoutTax = abs(round(line.price_unit * line.quantity_done))
             sumOfTotalLineAmountWithoutTax += itemTotalAmountWithoutTax
             item = {
                         "lineNumber": index,
                         "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
                         "itemName": line.product_id.name if line.product_id and line.product_id.name else '',
                         "unitName": line.product_uom.name if line.product_uom else '',
-                        "quantity": line.quantity_done,
-                        "unitPrice": line.price_unit,
+                        "quantity": abs(line.quantity_done),
+                        "unitPrice": abs(line.price_unit),
                         "itemTotalAmountWithoutTax": itemTotalAmountWithoutTax,
                         "itemTotalAmountWithTax": itemTotalAmountWithoutTax,
                         "taxAmount": 0,
