@@ -63,7 +63,7 @@ class AccountInvoice(models.Model):
         if invoice.x_transaction_id:
             valid = False
             message = u'Hóa đơn đã được tạo hóa đơn điện tử'
-        return valid, message
+        return valid, invoice.name + ': ' + message
 
     # adjustmentType :    1 - hoa don goc
     #                     3 - hoa don thay the
@@ -73,7 +73,7 @@ class AccountInvoice(models.Model):
     #                           1 - dieu chinh tien
     #                           2 - dieu chinh thong tin
     @api.multi
-    def generate_invoice_date(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
+    def generate_invoice_data(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
         payment_method_name = "TM/CK"
 
         # buyer information
@@ -258,7 +258,7 @@ class AccountInvoice(models.Model):
             item = {
                      "lineNumber": index,
                      "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
-                     "itemName": line.product_id.name if line.product_id and line.product_id.name else '',
+                     "itemName": (line.product_id.name if line.product_id and line.product_id.name else '') + (u'(Hàng khuyến mại không thu tiền)' if line.x_total_price == 0 else ''),
                      "unitName": line.uom_id.name if line.uom_id else '',
                      "unitPrice": line.price_unit,
                      "quantity": line.quantity,
@@ -345,18 +345,18 @@ class AccountInvoice(models.Model):
                 origin_invoice = self.env['account.invoice'].search([('supplier_invoice_number','=',invoice.x_origin_invoice)], order='id asc')
                 if len(origin_invoice.ids) > 0:
                     if invoice.x_functional_amount_total != origin_invoice[0].x_functional_amount_total:
-                        data = self.generate_invoice_date(invoice=invoice, adjustment_type=5, username=username, adjustmentInvoiceType=1, origin_invoice=origin_invoice[0])
+                        data = self.generate_invoice_data(invoice=invoice, adjustment_type=5, username=username, adjustmentInvoiceType=1, origin_invoice=origin_invoice[0])
                     else:
-                        data = self.generate_invoice_date(invoice=invoice, adjustment_type=5, username=username, adjustmentInvoiceType=2, origin_invoice=origin_invoice[0])
+                        data = self.generate_invoice_data(invoice=invoice, adjustment_type=5, username=username, adjustmentInvoiceType=2, origin_invoice=origin_invoice[0])
             else:
-                data = self.generate_invoice_date(invoice=invoice, adjustment_type=1, username=username, adjustmentInvoiceType=0)
+                data = self.generate_invoice_data(invoice=invoice, adjustment_type=1, username=username, adjustmentInvoiceType=0)
 
             result = requests.post(url, data=json.dumps(data), headers=headers)
 
             if self.verify_return_code(result.status_code) == 200:
                 output = result.json()
                 if 'errorCode' in output and output['errorCode'] != None:
-                    raise ValidationError(str(output['errorCode']) + ": " + str(output['description']))
+                    raise ValidationError(invoice.name + ': ' + str(output['errorCode']) + ": " + str(output['description']))
                 else:
                     output_result = output['result']
                     values = {
@@ -366,7 +366,8 @@ class AccountInvoice(models.Model):
                                 'x_created_sinvoice': datetime.now(),
                                 'x_reservation_code': output_result['reservationCode']
                               }
-                    invoice.update(values)
+                    invoice.write(values)
+                    self.env.cr.commit()
 
     @api.multi
     def cancel_hddt(self):

@@ -94,7 +94,7 @@ class StockPicking(models.Model):
         #     valid = False
         #     message = u'Người mua để trống'
 
-        return valid, message
+        return valid, invoice.name + ': ' + message
 
 
     # adjustmentType :    1 - hoa don goc
@@ -105,7 +105,7 @@ class StockPicking(models.Model):
     #                           1 - dieu chinh tien
     #                           2 - dieu chinh thong tin
     @api.multi
-    def generate_invoice_date(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
+    def generate_invoice_data(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
         # transporter information
         # buyer_name = invoice.implemented_by_id.name if invoice.implemented_by_id else ''
         # if buyer_name == '':
@@ -361,16 +361,16 @@ class StockPicking(models.Model):
             if invoice.x_origin_invoice:
                 origin_invoice = self.env['stock.picking'].search([('x_supplier_invoice_number','=',invoice.x_origin_invoice)], order='id asc')
                 if len(origin_invoice.ids) > 0:
-                    data = self.generate_invoice_date(invoice=invoice, adjustment_type=5, username=username, adjustmentInvoiceType=2, origin_invoice=origin_invoice[0])
+                    data = self.generate_invoice_data(invoice=invoice, adjustment_type=5, username=username, adjustmentInvoiceType=2, origin_invoice=origin_invoice[0])
             else:
-                data = self.generate_invoice_date(invoice=invoice, adjustment_type=1, username=username, adjustmentInvoiceType=0)
+                data = self.generate_invoice_data(invoice=invoice, adjustment_type=1, username=username, adjustmentInvoiceType=0)
 
             result = requests.post(url, data=json.dumps(data), headers=headers)
 
             if self.verify_return_code(result.status_code) == 200:
                 output = result.json()
                 if 'errorCode' in output and output['errorCode'] != None:
-                    raise ValidationError(str(output['errorCode']) + ": " + str(output['description']))
+                    raise ValidationError(invoice.name + ': ' + str(output['errorCode']) + ": " + str(output['description']))
                 else:
                     output_result = output['result']
                     values = {
@@ -380,7 +380,8 @@ class StockPicking(models.Model):
                                 'x_created_sinvoice': datetime.now(),
                                 'x_reservation_code': output_result['reservationCode']
                               }
-                    invoice.update(values)
+                    invoice.write(values)
+                    self.env.cr.commit()
 
 
     @api.multi
