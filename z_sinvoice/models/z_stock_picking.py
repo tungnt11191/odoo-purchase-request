@@ -72,6 +72,15 @@ class StockPicking(models.Model):
         if self.x_template_symbol:
             self.x_invoice_symbol = self.x_template_symbol.invoice_symbol
 
+    @api.model
+    def get_sinvoice_type(self,picking_type):
+        if picking_type.x_invoice_type == self.env.ref('z_sinvoice_for_dap.z_invoice_invoice_type_04HGDL'):
+            return self.env.ref('z_sinvoice_for_dap.z_invoice_invoice_type_04HGDL').code
+        elif picking_type.x_invoice_type == self.env.ref('z_sinvoice_for_dap.z_invoice_invoice_type_03XKNB'):
+            return self.env.ref('z_sinvoice_for_dap.z_invoice_invoice_type_03XKNB').code
+
+        return False
+
     @api.multi
     def validate_invoice(self, invoice):
         valid = True
@@ -94,7 +103,7 @@ class StockPicking(models.Model):
         #     valid = False
         #     message = u'Người mua để trống'
 
-        return valid, invoice.name + ': ' + message
+        return valid, 'invoice id (' + str(invoice.id) + ')' + ': ' + message
 
 
     # adjustmentType :    1 - hoa don goc
@@ -106,6 +115,13 @@ class StockPicking(models.Model):
     #                           2 - dieu chinh thong tin
     @api.multi
     def generate_invoice_data(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
+
+        sinvoice_template_code = self.get_sinvoice_type(invoice.picking_type_id)
+        code_hgdl = self.env.ref('z_sinvoice_for_dap.z_invoice_invoice_type_04HGDL').code
+        code_xknb = self.env.ref('z_sinvoice_for_dap.z_invoice_invoice_type_03XKNB').code
+
+
+
         # transporter information
         # buyer_name = invoice.implemented_by_id.name if invoice.implemented_by_id else ''
         # if buyer_name == '':
@@ -117,6 +133,10 @@ class StockPicking(models.Model):
         buyer_name = invoice.x_transporter if invoice.x_transporter else ''
         if buyer_name == '':
             buyer_name = invoice.partner_id.name if invoice.partner_id else ''
+        buyer_legal_name = buyer_name
+
+        if sinvoice_template_code == code_hgdl:
+            buyer_legal_name = invoice.partner_id.name if invoice.partner_id else ''
 
         buyer_tax_code = invoice.x_partner_tax_code.strip() if invoice.x_partner_tax_code else ''
         buyer_address_line = invoice.x_address if invoice.x_address else ''
@@ -150,7 +170,7 @@ class StockPicking(models.Model):
             },
             "buyerInfo": {
                 "buyerName": buyer_name,
-                "buyerLegalName": buyer_name,
+                "buyerLegalName": buyer_legal_name,
                 "buyerTaxCode": buyer_tax_code,
                 "buyerAddressLine": buyer_address_line,
                 # "buyerDistrictName": buyer_district_name,
@@ -160,14 +180,14 @@ class StockPicking(models.Model):
                 # "buyerFaxNumber": buyer_phone_number,
                 # "buyerEmail": buyer_email,
             },
-            "sellerInfo": {
-                "sellerCode": seller_code,
-                "sellerLegalName": seller_legal_name,
-                "sellerTaxCode": seller_tax_code,
-                "sellerAddressLine": seller_address_line,
-                "sellerPhoneNumber": seller_phone_number,
-                "sellerEmail": seller_email,
-            },
+            # "sellerInfo": {
+            #     "sellerCode": seller_code,
+            #     "sellerLegalName": seller_legal_name,
+            #     "sellerTaxCode": seller_tax_code,
+            #     "sellerAddressLine": seller_address_line,
+            #     "sellerPhoneNumber": seller_phone_number,
+            #     "sellerEmail": seller_email,
+            # },
             # "deliveryInfo": {
             #     "deliveryOrderNumber": invoice.name,
             #     "deliveryOrderDate":  invoice.scheduled_date.strftime('%Y%m%d%H%M%S'),
@@ -370,7 +390,7 @@ class StockPicking(models.Model):
             if self.verify_return_code(result.status_code) == 200:
                 output = result.json()
                 if 'errorCode' in output and output['errorCode'] != None:
-                    raise ValidationError(invoice.name + ': ' + str(output['errorCode']) + ": " + str(output['description']))
+                    raise ValidationError('invoice id (' + str(invoice.id) + ')' + ': ' + str(output['errorCode']) + ": " + str(output['description']))
                 else:
                     output_result = output['result']
                     values = {

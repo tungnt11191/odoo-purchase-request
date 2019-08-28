@@ -63,7 +63,7 @@ class AccountInvoice(models.Model):
         if invoice.x_transaction_id:
             valid = False
             message = u'Hóa đơn đã được tạo hóa đơn điện tử'
-        return valid, invoice.name + ': ' + message
+        return valid, 'invoice id (' + str(invoice.id) + ')' + ': ' + message
 
     # adjustmentType :    1 - hoa don goc
     #                     3 - hoa don thay the
@@ -148,16 +148,16 @@ class AccountInvoice(models.Model):
                 "buyerCode": buyer_code,
                 "buyerBirthDay": buyer_birthdate
             },
-            "sellerInfo": {
-                "sellerCode": seller_code,
-                "sellerLegalName": seller_legal_name,
-                "sellerTaxCode": seller_tax_code,
-                "sellerAddressLine": seller_address_line,
-                "sellerPhoneNumber": seller_phone_number,
-                "sellerEmail": seller_email,
-                # "sellerBankName": seller_bank_name,
-                # "sellerBankAccount": seller_bank_account
-            },
+            # "sellerInfo": {
+            #     "sellerCode": seller_code,
+            #     "sellerLegalName": seller_legal_name,
+            #     "sellerTaxCode": seller_tax_code,
+            #     "sellerAddressLine": seller_address_line,
+            #     "sellerPhoneNumber": seller_phone_number,
+            #     "sellerEmail": seller_email,
+            #     # "sellerBankName": seller_bank_name,
+            #     # "sellerBankAccount": seller_bank_account
+            # },
             "extAttribute": [],
             "payments": [
                 {
@@ -356,7 +356,7 @@ class AccountInvoice(models.Model):
             if self.verify_return_code(result.status_code) == 200:
                 output = result.json()
                 if 'errorCode' in output and output['errorCode'] != None:
-                    raise ValidationError(invoice.name + ': ' + str(output['errorCode']) + ": " + str(output['description']))
+                    raise ValidationError('invoice id (' + str(invoice.id) + ')' + ': ' + str(output['errorCode']) + ": " + str(output['description']))
                 else:
                     output_result = output['result']
                     values = {
