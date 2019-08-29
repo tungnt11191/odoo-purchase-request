@@ -23,26 +23,59 @@
                     <button name="cancel_hddt" type="object" string="Hủy HĐĐT" confirm="Are you sure you?" attrs="{'invisible': [('x_invoice_status', 'in', ['status_not_sync','status_canceled'])]}"/>
                 </xpath>
                 <xpath expr="//page[last()]" position="after">
-                    <page string="Thông Tin HĐĐT" attrs="{'invisible': [('x_able_to_sync', '=', False)]}" >
+                    <field name="x_invoice_type_hgdl" invisible="1"/>
+                    <field name="x_invoice_type_xknb" invisible="1"/>
+                    <field name="x_able_to_sync" invisible="1"/>
+                    <page string="Thông Tin HĐĐT HGDL" attrs="{'invisible': ['|',('x_able_to_sync', '=', False),('x_invoice_type_hgdl', '=', False)]}" >
+                        <group>
+                            <group>
+                                <field name="x_economic_contract_number"/>
+                                <field name="x_sinvoice_date_done"/>
+                                <field name="company_id" string="Của"/>
+                                <field name="partner_id" string="Với cá nhân tổ chức"/>
+                                <field name="x_partner_tax_code"/>
+                            </group>
+                            <group>
+                                <field name="x_transportation_method"/>
+                                <field name="x_transporter"/>
+                                <field name="location_id"/>
+                                <field name="partner_id" string="Nhập tại kho"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="x_template_symbol"/>
+                                <field name="x_invoice_symbol"/>
+                                <field name="x_supplier_invoice_number" readonly="1"/>
+                                <field name="x_origin_invoice"/>
+                            </group>
+                            <group>
+                                <field name="x_invoice_status" readonly="1"/>
+                                <field name="x_created_sinvoice" readonly="1"/>
+                                <field name="x_canceled_sinvoice" readonly="1"/>
+                                <field name="x_reservation_code" readonly="1" string="Mã bí mật"/>
+                                <field name="x_transaction_id" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page string="Thông Tin HĐĐT XKNB" attrs="{'invisible': ['|',('x_able_to_sync', '=', False),('x_invoice_type_xknb', '=', False)]}" >
                         <group>
                             <group>
                                 <field name="name" string="Căn cứ lệnh điều động số"/>
-                                <field name="x_economic_contract_number"/>
-                                <field name="x_transportation_method"/>
+                                <field name="date_done"/>
+                                <field name="company_id" string="Của"/>
+                                <field name="x_about"/>
                                 <field name="x_transporter"/>
-                                <field name="x_able_to_sync" invisible="1"/>
                             </group>
                             <group>
-                                <field name="x_about"/>
                                 <field name="x_contract_number"/>
-                                <field name="date_done"/>
+                                <field name="x_transportation_method"/>
                                 <field name="location_id"/>
                                 <field name="location_dest_id"/>
                             </group>
                         </group>
                         <group>
                             <group>
-                                <field name="x_partner_tax_code"/>
                                 <field name="x_template_symbol"/>
                                 <field name="x_invoice_symbol"/>
                                 <field name="x_supplier_invoice_number" readonly="1"/>
