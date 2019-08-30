@@ -278,20 +278,20 @@ class StockPicking(models.Model):
 
         if invoice.x_invoice_type_xknb and invoice.date_done:
             data['metadata'].append({
-                                        "invoiceCustomFieldId": 16,
+                                        "invoiceCustomFieldId": 787,
                                         "keyTag": "commandDate",
                                         "valueType": 'date',
                                         "keyLabel": "Ngày điều động",
-                                        "stringValue":  invoice.date_done.strftime('%Y%m%d%H%M%S')
+                                        "dateValue":  invoice.date_done.strftime('%Y%m%d')
                                     })
 
         if invoice.x_invoice_type_hgdl and invoice.x_sinvoice_date_done:
             data['metadata'].append({
-                                        "invoiceCustomFieldId": 16,
+                                        "invoiceCustomFieldId": 787,
                                         "keyTag": "commandDate",
                                         "valueType": 'date',
                                         "keyLabel": "Ngày điều động",
-                                        "stringValue":  invoice.x_sinvoice_date_done.strftime('%Y%m%d%H%M%S')
+                                        "dateValue":  invoice.x_sinvoice_date_done.strftime('%Y%m%d')
                                     })
 
         if invoice.x_invoice_type_xknb and invoice.name:
