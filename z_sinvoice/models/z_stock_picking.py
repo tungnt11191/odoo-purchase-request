@@ -84,9 +84,9 @@ class StockPicking(models.Model):
         valid = True
         message = ''
         today = date.today()
-        if invoice.x_invoice_type_hgdl and not invoice.x_partner_tax_code:
+        if invoice.x_invoice_type_hgdl and (not invoice.x_partner_tax_code or (invoice.x_partner_tax_code and (invoice.x_partner_tax_code.strip() == '' or len(invoice.x_partner_tax_code.strip()) > 20))):
             valid = False
-            message = u'Mã số thuế để trống'
+            message = u'Mã số thuế để trống hoặc lớn hơn 20 kí tự'
 
         if invoice.x_transaction_id:
             valid = False
@@ -103,6 +103,16 @@ class StockPicking(models.Model):
 
         return valid, 'invoice id (' + str(invoice.id) + ')' + ': ' + message
 
+    def validate_tax_code(self, tax_code):
+        check = True
+        # for c in tax_code:
+        #     if not str(c).isdigit():
+        #         check = False
+        #         break
+
+        if len(tax_code) > 20 or len(tax_code) == 0:
+            check = False
+        return check
 
     # adjustmentType :    1 - hoa don goc
     #                     3 - hoa don thay the
@@ -124,7 +134,7 @@ class StockPicking(models.Model):
         # buyer information
         buyer_name = invoice.x_transporter if invoice.x_transporter else ''
         buyer_legal_name = invoice.partner_id.name if invoice.partner_id else ''
-        buyer_tax_code = invoice.x_partner_tax_code.strip() if invoice.x_partner_tax_code else ''
+
         buyer_address_line = invoice.x_address if invoice.x_address else ''
         # buyer_district_name = invoice.partner_id.x_district_id.x_name if invoice.partner_id and invoice.partner_id.x_district_id else ''
         # buyer_city_name = invoice.partner_id.state_id.name if invoice.partner_id and invoice.partner_id.state_id else ''
@@ -157,7 +167,6 @@ class StockPicking(models.Model):
             "buyerInfo": {
                 "buyerName": buyer_name,
                 "buyerLegalName": buyer_legal_name,
-                "buyerTaxCode": buyer_tax_code,
                 "buyerAddressLine": buyer_address_line,
                 # "buyerDistrictName": buyer_district_name,
                 # "buyerCityName": buyer_city_name,
@@ -205,7 +214,9 @@ class StockPicking(models.Model):
             "customFields": [],
             "meterReading": []
         }
-
+        if invoice.x_invoice_type_hgdl:
+            buyer_tax_code = invoice.x_partner_tax_code.strip() if invoice.x_partner_tax_code else ''
+            data['buyerInfo']['buyerTaxCode'] = buyer_tax_code
         if invoice.x_economic_contract_number:
             data['metadata'].append({
                                         "invoiceCustomFieldId": 16,
@@ -282,7 +293,8 @@ class StockPicking(models.Model):
                                         "keyTag": "commandDate",
                                         "valueType": 'date',
                                         "keyLabel": "Ngày điều động",
-                                        "dateValue":  invoice.date_done.strftime('%Y%m%d')
+                                        # "dateValue":  invoice.date_done.strftime('%Y%m%d')
+                                        'dateValue': str(int(datetime.fromordinal(invoice.date_done.toordinal()).timestamp() * 1000))
                                     })
 
         if invoice.x_invoice_type_hgdl and invoice.x_sinvoice_date_done:
@@ -291,7 +303,8 @@ class StockPicking(models.Model):
                                         "keyTag": "commandDate",
                                         "valueType": 'date',
                                         "keyLabel": "Ngày điều động",
-                                        "dateValue":  invoice.x_sinvoice_date_done.strftime('%Y%m%d')
+                                        # "dateValue":  invoice.x_sinvoice_date_done.strftime('%Y%m%d')
+                                        'dateValue': str(int(datetime.fromordinal(invoice.x_sinvoice_date_done.toordinal()).timestamp() * 1000))
                                     })
 
         if invoice.x_invoice_type_xknb and invoice.name:

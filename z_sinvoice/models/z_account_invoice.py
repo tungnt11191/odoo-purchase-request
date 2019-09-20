@@ -42,10 +42,13 @@ class AccountInvoice(models.Model):
 
     def validate_tax_code(self, tax_code):
         check = True
-        for c in tax_code:
-            if not str(c).isdigit():
-                check = False
-                break
+        # for c in tax_code:
+        #     if not str(c).isdigit():
+        #         check = False
+        #         break
+
+        if len(tax_code) > 20 or len(tax_code) == 0:
+            check = False
         return check
 
     @api.multi
@@ -79,11 +82,6 @@ class AccountInvoice(models.Model):
         # buyer information
         buyer_name = invoice.x_purchase_person.name if invoice.x_purchase_person else ''
         buyer_legal_name = invoice.x_vat_partner if invoice.x_vat_partner else ''
-        buyer_tax_code = invoice.x_partner_tax_code.strip() if invoice.x_partner_tax_code else ''
-
-        if not self.validate_tax_code(buyer_tax_code):
-            buyer_tax_code = ''
-            note = u'Người mua không cung cấp mã số thuế'
 
         buyer_address_line = invoice.x_partner_address if invoice.partner_id else ''
         # buyer_district_name = invoice.partner_id.x_district_id.x_name if invoice.partner_id and invoice.partner_id.x_district_id else ''
@@ -132,7 +130,6 @@ class AccountInvoice(models.Model):
             "buyerInfo": {
                 "buyerName": buyer_name,
                 "buyerLegalName": buyer_legal_name,
-                "buyerTaxCode": buyer_tax_code,
                 "buyerAddressLine": buyer_address_line,
                 # "buyerPostalCode": buyer_postal_code,
                 # "buyerDistrictName": buyer_district_name,
@@ -189,15 +186,20 @@ class AccountInvoice(models.Model):
             # }
         }
 
-        if buyer_tax_code == '':
-            data['metadata'].append({
-                                        "invoiceCustomFieldId": 951,
-                                        "keyTag": "note",
-                                        "valueType": "text",
-                                        "keyLabel": "ghi chú",
-                                        "stringValue": note
-                                    })
+        buyer_tax_code = invoice.x_partner_tax_code.strip() if invoice.x_partner_tax_code else ''
 
+        if self.validate_tax_code(buyer_tax_code):
+            data['buyerInfo']['buyerTaxCode'] = buyer_tax_code
+        else:
+            # note = u'Người mua không cung cấp mã số thuế'
+            note = buyer_tax_code
+            data['metadata'].append({
+                "invoiceCustomFieldId": 951,
+                "keyTag": "note",
+                "valueType": "text",
+                "keyLabel": "ghi chú",
+                "stringValue": note
+            })
         if invoice.x_origin:
             data['metadata'].append({
                                         "invoiceCustomFieldId": 954,
