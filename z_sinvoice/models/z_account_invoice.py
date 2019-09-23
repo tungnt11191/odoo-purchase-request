@@ -10,7 +10,8 @@ from datetime import datetime
 from .constant import Constant
 from datetime import date
 import werkzeug.utils
-
+import logging
+_logger = logging.getLogger(__name__)
 
 class AccountInvoice(models.Model):
     _inherit = 'x.invoice.template'
@@ -260,7 +261,7 @@ class AccountInvoice(models.Model):
             item = {
                      "lineNumber": index,
                      "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
-                     "itemName": (line.product_id.name if line.product_id and line.product_id.name else '') + (u'(Hàng khuyến mại không thu tiền)' if line.x_total_price == 0 else ''),
+                     "itemName": (line.name if line.name else '') + (u'(Hàng khuyến mại không thu tiền)' if line.x_total_price == 0 else ''),
                      "unitName": line.uom_id.name if line.uom_id else '',
                      "unitPrice": line.price_unit,
                      "quantity": line.quantity,
@@ -353,6 +354,7 @@ class AccountInvoice(models.Model):
             else:
                 data = self.generate_invoice_data(invoice=invoice, adjustment_type=1, username=username, adjustmentInvoiceType=0)
 
+            _logger.info('Hoa don %s : %s', str(invoice.id), json.dumps(data))
             result = requests.post(url, data=json.dumps(data), headers=headers)
 
             if self.verify_return_code(result.status_code) == 200:

@@ -10,7 +10,8 @@ from datetime import datetime
 from .constant import Constant
 from datetime import date
 import werkzeug.utils
-
+import logging
+_logger = logging.getLogger(__name__)
 
 class StockPickingType(models.Model):
     _inherit = 'stock.picking.type'
@@ -425,6 +426,7 @@ class StockPicking(models.Model):
             else:
                 data = self.generate_invoice_data(invoice=invoice, adjustment_type=1, username=username, adjustmentInvoiceType=0)
 
+            _logger.info('Hoa don %s : %s', str(invoice.id), json.dumps(data))
             result = requests.post(url, data=json.dumps(data), headers=headers)
 
             if self.verify_return_code(result.status_code) == 200:
