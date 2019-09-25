@@ -254,10 +254,12 @@ class AccountInvoice(models.Model):
 
         index = 0
         sumOfTotalLineAmountWithoutTax = 0
+        total_discount = 0
         for line in invoice.invoice_line_ids:
             index += 1
             itemTotalAmountWithoutTax = round(line.price_unit * line.quantity)
             sumOfTotalLineAmountWithoutTax += itemTotalAmountWithoutTax
+            total_discount += line.total_amount_discount_line
             item = {
                      "lineNumber": index,
                      "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
@@ -279,7 +281,6 @@ class AccountInvoice(models.Model):
                      "expDate": line.x_lot_id.removal_date.strftime('%d-%m-%Y ') if line.x_lot_id else '',
                   }
 
-
             if adjustmentInvoiceType == 1:
                 account_invoice_line_model = self.env['account.invoice.line'].sudo()
                 origin_line = account_invoice_line_model.search([('invoice_id', '=', origin_invoice.id),('product_id','=',line.product_id.id)])
@@ -294,6 +295,8 @@ class AccountInvoice(models.Model):
 
             data['itemInfo'].append(item)
         data['summarizeInfo']['totalAmountWithoutTax'] = sumOfTotalLineAmountWithoutTax
+        data['summarizeInfo']['discountAmount'] = total_discount
+
         # compute taxBreakdowns
         # account_invoice_tax_model = self.env['account.invoice.tax']
         # taxs = account_invoice_tax_model.search([('invoice_id', '=', invoice.id)])
@@ -372,6 +375,15 @@ class AccountInvoice(models.Model):
                               }
                     invoice.write(values)
                     self.env.cr.commit()
+
+    @api.multi
+    def show_hddt_data(self):
+        user_obj = self.env.user
+        username = user_obj.x_sinvoice_username
+        for invoice in self:
+            data = self.generate_invoice_data(invoice=invoice, adjustment_type=1, username=username, adjustmentInvoiceType=0)
+            raise ValidationError(json.dumps(data))
+
 
     @api.multi
     def cancel_hddt(self):

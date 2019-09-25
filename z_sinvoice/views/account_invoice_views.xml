@@ -7,6 +7,7 @@
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@id='account_invoice_payment_btn']" position="before">
+                    <!--<button name="show_hddt_data" type="object" string="Show HĐĐT data" confirm="Are you sure you?"/>-->
                     <button name="create_hddt" type="object" string="Tạo HĐĐT" confirm="Are you sure you?" attrs="{'invisible': [('x_invoice_status', '=', 'status_created')]}"/>
                     <button name="cancel_hddt" type="object" string="Hủy HĐĐT" confirm="Are you sure you?" attrs="{'invisible': [('x_invoice_status', 'in', ['status_not_sync','status_canceled'])]}"/>
                 </xpath>
