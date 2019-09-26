@@ -229,6 +229,8 @@ class AccountInvoice(models.Model):
                                         "stringValue": payment_method_name
                                     })
 
+
+
         if adjustmentInvoiceType != 0:
             data['generalInvoiceInfo']['adjustmentInvoiceType'] = adjustmentInvoiceType
             data['generalInvoiceInfo']['originalInvoiceId'] = invoice.x_origin_invoice
@@ -297,6 +299,22 @@ class AccountInvoice(models.Model):
         data['summarizeInfo']['totalAmountWithoutTax'] = sumOfTotalLineAmountWithoutTax
         data['summarizeInfo']['discountAmount'] = total_discount
 
+        data['metadata'].append({
+            "invoiceCustomFieldId": 1721,
+            "keyTag": "discountVAT",
+            "valueType": "number",
+            "keyLabel": "VAT CK",
+            "numberValue": invoice.function_sum_amount_discount
+        })
+        data['metadata'].append({
+            "invoiceCustomFieldId": 1681,
+            "keyTag": "discounttotal",
+            "valueType": "number",
+            "keyLabel": "Tiền thuế CK",
+            "numberValue": invoice.function_sum_amount_discount - total_discount
+        })
+
+
         # compute taxBreakdowns
         # account_invoice_tax_model = self.env['account.invoice.tax']
         # taxs = account_invoice_tax_model.search([('invoice_id', '=', invoice.id)])
@@ -344,8 +362,7 @@ class AccountInvoice(models.Model):
             # base64string = base64.encodebytes(str.encode('%s:%s' % (username, password)))
             base64string = base64.b64encode(bytes(username + ':' + password, "utf-8"))
             headers['Authorization'] = "Basic %s" % base64string.decode("utf-8")
-            url = Constant.SINVOICE_CREATE_URI
-
+            url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_create_uri')
             data = {}
             if invoice.x_origin_invoice:
                 origin_invoice = self.env['account.invoice'].search([('supplier_invoice_number','=',invoice.x_origin_invoice)], order='id asc')
@@ -403,9 +420,10 @@ class AccountInvoice(models.Model):
             # url = Constant.SINVOICE_CANCEL_URI + '?supplierTaxCode=' + Constant.SUPPLIER_TAX_CODE + '&templateCode='+invoice.x_template_symbol.code+'&invoiceNo='+invoice.x_invoice_no+'&additionalReferenceDesc=huy&additionalReferenceDate='+canceled_sinvoice_datetime+'&strIssueDate='+created_sinvoice_datetime
             # result = requests.get(url, headers)
 
-            url = Constant.SINVOICE_CANCEL_URI
+            url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_cancel_uri')
+            supplier_tax_code = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.supplier_tax_code')
             data = {
-                    "supplierTaxCode": Constant.SUPPLIER_TAX_CODE,
+                    "supplierTaxCode": supplier_tax_code,
                     "invoiceNo": invoice.x_invoice_symbol+invoice.supplier_invoice_number,
                     "strIssueDate": created_sinvoice_datetime,
                     "additionalReferenceDesc": 'huy',

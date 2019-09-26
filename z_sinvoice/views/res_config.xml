@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="z_sinvoice_for_dap_settings_view" model="ir.ui.view">
+        <field name="name">Configuration HDDT</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="HDDT" string="HDDT" data-key="z_sinvoice_for_dap">
+                    <h2>General Settings</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="x_supplier_tax_code"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="x_supplier_tax_code" class="o_light_label"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="x_sinvoice_uri"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="x_sinvoice_uri" class="o_light_label"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="x_sinvoice_create_uri"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="x_sinvoice_create_uri" class="o_light_label"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="x_sinvoice_create_draft_uri"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="x_sinvoice_create_draft_uri" class="o_light_label"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="x_sinvoice_cancel_uri"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="x_sinvoice_cancel_uri" class="o_light_label"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="z_sinvoice_for_dap_settings_action" model="ir.actions.act_window">
+        <field name="name">HDDT Configuration</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="z_sinvoice_for_dap_settings_view"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'z_sinvoice_for_dap'}</field>
+    </record>
+
+    <menuitem id="z_sinvoice_for_dap_settings_menu" name="Config HDDT"
+              parent="account.menu_finance_configuration" action="z_sinvoice_for_dap_settings_action"/>
+</odoo>

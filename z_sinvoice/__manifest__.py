@@ -17,6 +17,7 @@ Hoa don dien tu
         'views/res_country_views.xml',
         'views/account_invoice_views.xml',
         'views/stock_picking_views.xml',
+        'views/res_config.xml',
         'data/data.xml',
     ],
     'installable': True,

@@ -36,6 +36,7 @@
                                 <field name="x_partner_tax_code"/>
                             </group>
                             <group>
+                                <field name="x_contract_number"/>
                                 <field name="x_transportation_method"/>
                                 <field name="x_transporter"/>
                                 <field name="location_id"/>

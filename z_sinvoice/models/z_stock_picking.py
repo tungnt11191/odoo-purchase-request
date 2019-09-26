@@ -235,7 +235,7 @@ class StockPicking(models.Model):
                                         "stringValue": invoice.x_transportation_method
                                     })
 
-        if invoice.x_invoice_type_xknb and invoice.x_contract_number:
+        if invoice.x_contract_number:
             data['metadata'].append({
                                         "invoiceCustomFieldId": 791,
                                         "keyTag": "contractNo",
@@ -414,8 +414,10 @@ class StockPicking(models.Model):
             headers = {"Content-type": "application/json"}
             base64string = base64.b64encode(bytes(username + ':' + password, "utf-8"))
             headers['Authorization'] = "Basic %s" % base64string.decode("utf-8")
-            url = Constant.SINVOICE_CREATE_URI
-
+            if invoice.x_invoice_type_xknb:
+                url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_create_uri')
+            elif invoice.x_invoice_type_hgdl:
+                url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_create_draft_uri')
             data = {}
 
             # neu ton tai hoa don goc thi dieu chinh, neu khong thi tao moi
@@ -436,11 +438,11 @@ class StockPicking(models.Model):
                 else:
                     output_result = output['result']
                     values = {
-                                'x_supplier_invoice_number': output_result['invoiceNo'][6:],
-                                'x_transaction_id': output_result['transactionID'],
+                                'x_supplier_invoice_number': output_result['invoiceNo'][6:] if output_result is not None and 'invoiceNo' in output_result else '',
+                                'x_transaction_id': output_result['transactionID'] if output_result is not None and 'transactionID' in output_result else '',
                                 'x_invoice_status': 'status_created',
                                 'x_created_sinvoice': datetime.now(),
-                                'x_reservation_code': output_result['reservationCode']
+                                'x_reservation_code': output_result['reservationCode'] if output_result is not None and 'reservationCode' in output_result else ''
                               }
                     invoice.write(values)
                     self.env.cr.commit()
@@ -457,12 +459,17 @@ class StockPicking(models.Model):
         headers['Authorization'] = "Basic %s" % base64string.decode("utf-8")
 
         for invoice in self:
+            if invoice.x_supplier_invoice_number or invoice.x_supplier_invoice_number == '':
+                raise ValidationError(u'Hóa đơn nháp, không thể hủy')
+
             created_sinvoice_datetime = invoice.x_created_sinvoice.strftime('%Y%m%d%H%M%S')
             canceled_sinvoice_datetime = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
 
-            url = Constant.SINVOICE_CANCEL_URI
+            url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_cancel_uri')
+            supplier_tax_code = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.supplier_tax_code')
+
             data = {
-                    "supplierTaxCode": Constant.SUPPLIER_TAX_CODE,
+                    "supplierTaxCode": supplier_tax_code,
                     "invoiceNo": invoice.x_invoice_symbol+invoice.x_supplier_invoice_number,
                     "strIssueDate": created_sinvoice_datetime,
                     "additionalReferenceDesc": 'huy',
