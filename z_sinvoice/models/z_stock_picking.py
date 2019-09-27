@@ -366,11 +366,19 @@ class StockPicking(models.Model):
 
             batchNo = ''
             expDate = ''
-            # get lot and expire date
             comma = ''
+            batchNoArray = []
+            expDateArray = []
             for move_line in line.move_line_ids:
-                batchNo += (move_line.lot_id.name if move_line.lot_id else '') + comma
-                expDate += (move_line.lot_id.removal_date.strftime('%d-%m-%Y') if move_line.lot_id else '') + comma
+                if move_line.lot_id:
+                    if move_line.lot_id.name not in batchNoArray:
+                        batchNoArray.append(move_line.lot_id.name)
+                        batchNo += comma + (move_line.lot_id.name if move_line.lot_id else '')
+
+                    exp = move_line.lot_id.removal_date.strftime('%d-%m-%Y')
+                    if exp not in expDateArray:
+                        expDateArray.append(exp)
+                        expDate += comma + (exp if move_line.lot_id else '')
                 comma = ' , '
 
             item['batchNo'] = batchNo
