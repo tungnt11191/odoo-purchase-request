@@ -80,6 +80,11 @@ class AccountInvoice(models.Model):
     def generate_invoice_data(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
         payment_method_name = "TM/CK"
 
+        if invoice.payment_term_id:
+            if invoice.payment_term_id.x_check_cash_payment:
+                payment_method_name = "TM"
+            else:
+                payment_method_name = "TM/CK"
         # buyer information
         buyer_name = invoice.x_purchase_person.name if invoice.x_purchase_person else ''
         buyer_legal_name = invoice.x_vat_partner if invoice.x_vat_partner else ''
@@ -265,7 +270,8 @@ class AccountInvoice(models.Model):
             item = {
                      "lineNumber": index,
                      "itemCode": line.product_id.default_code if line.product_id and line.product_id.default_code else '',
-                     "itemName": (line.name if line.name else '') + (u'(Hàng khuyến mại không thu tiền)' if line.x_total_price == 0 else ''),
+                     # "itemName": (line.name if line.name else '') + (u'(Hàng khuyến mại không thu tiền)' if line.x_total_price == 0 else ''),
+                     "itemName": (line.name if line.name else ''),
                      "unitName": line.uom_id.name if line.uom_id else '',
                      "unitPrice": line.price_unit,
                      "quantity": line.quantity,
