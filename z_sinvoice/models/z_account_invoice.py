@@ -279,7 +279,7 @@ class AccountInvoice(models.Model):
                      "itemTotalAmountWithoutTax": itemTotalAmountWithoutTax,
                      "itemTotalAmountWithTax": round(line.x_total_price),
                      "itemTotalAmountAfterDiscount": round(line.x_total_price),
-                     "taxPercentage": round(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
+                     # "taxPercentage": round(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
                      "taxAmount": round(line.x_rounding_price_tax),
                      "discount": line.discount,
                      "discount2": line.discount2,
@@ -289,6 +289,14 @@ class AccountInvoice(models.Model):
                      "expDate": line.x_lot_id.removal_date.strftime('%d-%m-%Y ') if line.x_lot_id else '',
                   }
 
+            # get taxPercentage
+            if line.invoice_line_tax_ids:
+                for tax in line.invoice_line_tax_ids:
+                    if tax.name == 'Hàng không chịu thuế':
+                        item['taxPercentage'] = -2
+                    else:
+                        item['taxPercentage'] = int(tax.amount)
+
             if adjustmentInvoiceType == 1:
                 account_invoice_line_model = self.env['account.invoice.line'].sudo()
                 origin_line = account_invoice_line_model.search([('invoice_id', '=', origin_invoice.id),('product_id','=',line.product_id.id)])
@@ -296,7 +304,7 @@ class AccountInvoice(models.Model):
                 if len(origin_line.ids) > 0:
                     adjustment_tax_amount = line.x_rounding_price_tax - origin_line.x_rounding_price_tax
                     item['adjustmentTaxAmount'] = abs(adjustment_tax_amount)
-                    if adjustment_tax_amount < 0 :
+                    if adjustment_tax_amount < 0:
                         item['isIncreaseItem'] = False
                     else:
                         item['isIncreaseItem'] = True
@@ -310,14 +318,14 @@ class AccountInvoice(models.Model):
             "keyTag": "discountVAT",
             "valueType": "number",
             "keyLabel": "VAT CK",
-            "numberValue": invoice.function_sum_amount_discount
+            "numberValue": invoice.function_sum_amount_discount - total_discount
         })
         data['metadata'].append({
             "invoiceCustomFieldId": 1681,
             "keyTag": "discounttotal",
             "valueType": "number",
             "keyLabel": "Tiền thuế CK",
-            "numberValue": invoice.function_sum_amount_discount - total_discount
+            "numberValue": invoice.function_sum_amount_discount
         })
 
 
@@ -326,10 +334,16 @@ class AccountInvoice(models.Model):
         # taxs = account_invoice_tax_model.search([('invoice_id', '=', invoice.id)])
         for tax in invoice.tax_line_ids:
             item = {
-                'taxPercentage': int(tax.tax_id.amount),
+                # 'taxPercentage': int(tax.tax_id.amount),
                 'taxableAmount': tax.base,
                 'taxAmount': tax.amount,
             }
+
+            if tax.name == 'Hàng không chịu thuế':
+                item['taxPercentage'] = -2
+            else:
+                item['taxPercentage'] = int(tax.tax_id.amount)
+
             data['taxBreakdowns'].append(item)
 
         return data
