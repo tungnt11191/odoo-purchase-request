@@ -278,7 +278,7 @@ class AccountInvoice(models.Model):
                      # "itemTotalAmountWithoutTax": line.x_functional_price_subtotal,
                      "itemTotalAmountWithoutTax": itemTotalAmountWithoutTax,
                      "itemTotalAmountWithTax": round(line.x_total_price),
-                     "itemTotalAmountAfterDiscount": round(line.x_total_price),
+                     "itemTotalAmountAfterDiscount": itemTotalAmountWithoutTax - line.total_amount_discount_line,
                      # "taxPercentage": round(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
                      "taxAmount": round(line.x_rounding_price_tax),
                      "discount": line.discount,
