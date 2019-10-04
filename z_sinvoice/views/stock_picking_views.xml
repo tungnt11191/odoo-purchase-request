@@ -30,7 +30,7 @@
                         <group>
                             <group>
                                 <field name="x_economic_contract_number"/>
-                                <field name="x_sinvoice_date_done"/>
+                                <field name="x_sinvoice_date_done" string="Ngày hợp đồng"/>
                                 <field name="company_id" string="Của"/>
                                 <field name="partner_id" string="Với cá nhân tổ chức"/>
                                 <field name="x_partner_tax_code"/>

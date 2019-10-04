@@ -40,7 +40,7 @@ class StockPicking(models.Model):
     x_economic_contract_number = fields.Char(string=u'Hợp đồng kinh tế số', copy=False)
     x_transportation_method = fields.Char(string=u'Phương tiện vận chuyển', copy=False)
     x_about = fields.Char(string=u'Về việc', copy=False)
-    x_contract_number = fields.Char(string=u'Hợp đồng số', copy=False)
+    x_contract_number = fields.Char(string=u'Hợp đồng vận chuyển', copy=False)
     x_transporter = fields.Char(string=u'Người vận chuyển', copy=False)
     x_able_to_sync = fields.Boolean('Able to sync', compute='_compute_able_to_sync')
     x_invoice_type_xknb = fields.Boolean(u'Loại HĐĐT XKNB', default=False, compute='_compute_able_to_sync')
