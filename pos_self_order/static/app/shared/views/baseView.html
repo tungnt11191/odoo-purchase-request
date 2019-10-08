@@ -1,0 +1,59 @@
+﻿
+    <div id="wrapper">
+
+        <nav class="navbar-default navbar-static-side" role="navigation" ng-include="sideBar">
+
+        </nav>
+
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row border-bottom">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header">
+                        <span minimaliza-sidebar></span>
+                        <form role="search" class="navbar-form-custom" action="search_results.html">
+                            <div class="form-group">
+                                <input type="text" placeholder="Search product..." class="form-control" name="top-search" id="top-search">
+                            </div>
+                        </form>
+                    </div>
+                    <ul class="nav navbar-top-links text-right">
+                        <li class="dropdown">
+                            <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                                <i class="fa fa-shopping-cart"></i>  <span class="label label-primary">{{total_quantity}}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-alerts">
+                                <li ng-repeat="item in order.order_line">
+                                    <div>
+                                        <span class="col-sm-4 text-muted small header-product-name">{{item.product_name}}</span>
+                                        <span class="col-sm-4 text-muted small header-quantity">{{item.quantity}}</span>
+                                        <span class="col-sm-4 text-muted small header-price">{{item.price_unit}} / {{item.uom}}</span>
+                                    </div>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <div class="text-center link-block">
+                                        <a href="notifications.html">
+                                            <strong>{{total_amount}} $</strong>
+                                            <i class="fa fa-angle-right"></i>
+                                        </a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+
+
+                        <li>
+                            <a href="#" ng-click="logOut()">
+                                <i class="fa fa-sign-out"></i>
+                            </a>
+                        </li>
+                    </ul>
+
+                </nav>
+            </div>
+            <div ui-view></div>
+
+        </div>
+
+    </div>
+

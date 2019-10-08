@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="index" name="POS Index">
+        <!--
+        *
+        * INSPINIA - Responsive Admin Theme
+        * Version 2.7.1
+        *
+        -->
+        &lt;!DOCTYPE html&gt;
+        <html >
+
+            <head>
+
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+                <!-- Page title set in pageTitle directive -->
+                <title>Pos for customer</title>
+
+                <!-- Bootstrap -->
+                <link href="/pos_self_order/static/assets/css/bootstrap.min.css" rel="stylesheet"/>
+
+                <!-- Font awesome -->
+                <link href="/pos_self_order/static/assets/font-awesome/css/font-awesome.css" rel="stylesheet"/>
+
+                <link href="/pos_self_order/static/assets/css/plugins/toastr/toastr.min.css" rel="stylesheet"/>
+                <link href="/pos_self_order/static/assets/css/plugins/ui-select/select.min.css" rel="stylesheet" />
+                <!-- Main Inspinia CSS files -->
+                <link href="/pos_self_order/static/assets/css/animate.css" rel="stylesheet"/>
+                <link id="loadBefore" href="/pos_self_order/static/assets/css/style.css" rel="stylesheet"/>
+
+
+            </head>
+
+            <!-- ControllerAs syntax -->
+            <!-- Main controller with serveral data used in Inspinia theme on diferent view -->
+            <body ng-app="ecn" ng-controller="rootController" id="page-top">
+
+            <!-- Main view  -->
+            <div ui-view=""></div>
+
+            <!-- jQuery and Bootstrap -->
+            <script src="/pos_self_order/static/assets/js/jquery/jquery-3.1.1.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/plugins/jquery-ui/jquery-ui.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/bootstrap/bootstrap.min.js"></script>
+
+            <!-- MetsiMenu -->
+            <script src="/pos_self_order/static/assets/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+
+            <!-- SlimScroll -->
+            <script src="/pos_self_order/static/assets/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+            <!-- Peace JS -->
+            <script src="/pos_self_order/static/assets/js/plugins/pace/pace.min.js"></script>
+
+
+            <!-- Custom and plugin javascript -->
+            <script src="/pos_self_order/static/assets/js/inspinia.js"></script>
+
+            <!-- Main Angular scripts-->
+            <script src="/pos_self_order/static/assets/js/angular/angular.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/angular/angular-sanitize.js"></script>
+            <script src="/pos_self_order/static/assets/js/plugins/oclazyload/dist/ocLazyLoad.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/angular-translate/angular-translate.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/ui-router/angular-ui-router.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/bootstrap/ui-bootstrap-tpls-1.1.2.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/plugins/angular-idle/angular-idle.js"></script>
+            <script src="/pos_self_order/static/assets/js/plugins/toastr/toastr.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/plugins/ui-select/select.min.js"></script>
+
+            <!-- Anglar App Script -->
+            <script src="/pos_self_order/static/app/shared/modules/ecn.common.js"></script>
+            <script src="/pos_self_order/static/app/shared/services/notificationService.js"></script>
+            <script src="/pos_self_order/static/app/shared/services/apiService.js"></script>
+            <script src="/pos_self_order/static/app/shared/services/orderService.js"></script>
+            <script src="/pos_self_order/static/app/shared/directive/directives.js"></script>
+
+            <script src="/pos_self_order/static/app/app.js"></script>
+
+            <script src="/pos_self_order/static/app/components/home/rootController.js"></script>
+            <script src="/pos_self_order/static/app/components/home/homeController.js"></script>
+
+            <script>
+                $(document).ready(function () {
+
+
+                });
+            </script>
+
+            </body>
+        </html>
+    </template>
+    <template id="index_3" name="POS Index">
+        <!--
+        *
+        * INSPINIA - Responsive Admin Theme
+        * Version 2.7.1
+        *
+        -->
+        &lt;!DOCTYPE html&gt;
+        <html ng-app="inspinia">
+
+            <head>
+
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+                <!-- Page title set in pageTitle directive -->
+                <title>Pos for customer</title>
+
+                <!-- Bootstrap -->
+                <link href="/pos_self_order/static/assets/css/bootstrap.min.css" rel="stylesheet"/>
+
+                <!-- Font awesome -->
+                <link href="/pos_self_order/static/assets/font-awesome/css/font-awesome.css" rel="stylesheet"/>
+
+                <!-- Main Inspinia CSS files -->
+                <link href="/pos_self_order/static/assets/css/animate.css" rel="stylesheet"/>
+                <link id="loadBefore" href="/pos_self_order/static/assets/css/style.css" rel="stylesheet"/>
+
+
+            </head>
+
+            <!-- ControllerAs syntax -->
+            <!-- Main controller with serveral data used in Inspinia theme on diferent view -->
+            <body ng-controller="MainCtrl as main" class="{{$state.current.data.specialClass}}"  id="page-top">
+
+            <!-- Main view  -->
+            <div ui-view=""></div>
+
+            <!-- jQuery and Bootstrap -->
+            <script src="/pos_self_order/static/assets/js/jquery/jquery-3.1.1.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/plugins/jquery-ui/jquery-ui.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/bootstrap/bootstrap.min.js"></script>
+
+            <!-- MetsiMenu -->
+            <script src="/pos_self_order/static/assets/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+
+            <!-- SlimScroll -->
+            <script src="/pos_self_order/static/assets/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+            <!-- Peace JS -->
+            <script src="/pos_self_order/static/assets/js/plugins/pace/pace.min.js"></script>
+
+            <!-- Custom and plugin javascript -->
+            <script src="/pos_self_order/static/assets/js/inspinia.js"></script>
+
+            <!-- Main Angular scripts-->
+            <script src="/pos_self_order/static/assets/js/angular/angular.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/angular/angular-sanitize.js"></script>
+            <script src="/pos_self_order/static/assets/js/plugins/oclazyload/dist/ocLazyLoad.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/angular-translate/angular-translate.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/ui-router/angular-ui-router.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/bootstrap/ui-bootstrap-tpls-1.1.2.min.js"></script>
+            <script src="/pos_self_order/static/assets/js/plugins/angular-idle/angular-idle.js"></script>
+
+            <!--
+             You need to include this script on any page that has a Google Map.
+             When using Google Maps on your own site you MUST signup for your own API key at:
+             https://developers.google.com/maps/documentation/javascript/tutorial#api_key
+             After your sign up replace the key in the URL below..
+            -->
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQTpXj82d8UpCi97wzo_nKXL7nYrd4G70"></script>
+
+            <!-- Anglar App Script -->
+            <script src="/pos_self_order/static/assets/js/app.js"></script>
+            <script src="/pos_self_order/static/assets/js/config.js"></script>
+            <script src="/pos_self_order/static/assets/js/translations.js"></script>
+            <script src="/pos_self_order/static/assets/js/directives.js"></script>
+            <script src="/pos_self_order/static/assets/js/controllers.js"></script>
+
+            </body>
+        </html>
+    </template>
+
+   <template id="index_2" name="POS Index">&lt;!DOCTYPE html&gt;
+        <html>
+            <head>
+                <title>Customer POS</title>
+
+                <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+                <meta http-equiv="content-type" content="text/html, charset=utf-8" />
+
+                <meta name="viewport" content=" width=1024, user-scalable=no"/>
+                <meta name="apple-mobile-web-app-capable" content="yes"/>
+                <meta name="mobile-web-app-capable" content="yes"/>
+                <link rel="shortcut icon" href="/web/static/src/img/favicon.ico" type="image/x-icon"/>
+
+                <t t-call-assets="pos_self_order.assets"/>
+            </head>
+            <body>
+                <div class="o_main_content"/>
+            </body>
+        </html>
+    </template>
+    <template id="assets" name="point_of_sale assets">
+        <link rel="stylesheet" type="text/less" href="/web/static/src/less/fonts.less" />
+
+        <script type="text/javascript" src="/point_of_sale/static/lib/fastclick.js"></script>
+    </template>
+</odoo>
