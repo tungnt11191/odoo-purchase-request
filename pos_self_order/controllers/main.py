@@ -16,7 +16,7 @@ class PosSelfController(http.Controller):
             s = ""+str(num)
             while (len(s) < size):
                 s = "0" + str(s)
-            return s;
+            return s
         return str(zero_pad(pos_session.id, 5)) + '-' + str(zero_pad(pos_session.login_number, 3)) + '-' + str(zero_pad(sequence_number, 4))
 
     @http.route('/customer/pos/web', type='http', auth='public')
@@ -141,3 +141,77 @@ class PosSelfController(http.Controller):
         carrot_order['data']['amount_paid'] = amount_total
         carrot_order['data']['statement_ids'][0][2]['amount'] = amount_total
         created_orders = request.env['pos.order'].sudo().pre_create_from_ui([carrot_order])
+
+    @http.route(['/customer/pos/order/sync_to_pos'], type='json', auth='public', methods=['POST'])
+    def sync_to_pos(self, order, **kwargs):
+        # get customer
+        customer = order.get('customer')
+        exited_customer = request.env['res.partner'].sudo().search([('name', '=', customer.get('customer_name'))], limit=1)
+        if len(exited_customer.ids) > 0:
+            ordered_customer = exited_customer
+        else:
+            ordered_customer = request.env['res.partner'].sudo().create({'name': customer.get('customer_name')})
+
+        # get table
+        exited_table = request.env['restaurant.table'].sudo().search([('security_code', '=', customer.get('security_code'))], limit=1)
+        if len(exited_table.ids) > 0:
+            ordered_table = exited_table
+        else:
+            return False
+        """
+        Simulation of sales coming from the interface, even after closing the session
+        """
+        main_pos_config = exited_table.config_id
+        current_session = main_pos_config.current_session_id
+
+        # I click on create a new session button
+        # self.pos_config.open_session_cb()
+
+        # current_session = self.pos_config.current_session_id
+        sequence_number = current_session.sequence_number + 1
+        ref = self.generate_unique_id(pos_session=current_session, sequence_number=sequence_number)
+        untax, atax = 20, 2
+        new_order = {'data':
+            {
+                'amount_paid': untax + atax,
+                'amount_return': 0,
+                'amount_tax': atax,
+                'amount_total': untax + atax,
+                'creation_date': fields.Datetime.now(),
+                'fiscal_position_id': False,
+                'lines': [],
+                'name': 'Order ' + ref,
+                'partner_id': ordered_customer.id,
+                'table_id': ordered_table.id,
+                'pos_session_id': current_session.id,
+                'sequence_number': sequence_number,
+                'statement_ids': [[0, 0,
+                                   {'account_id': current_session.user_id.partner_id.property_account_receivable_id.id,
+                                    'amount': untax + atax,
+                                    'journal_id': main_pos_config.journal_ids[0].id,
+                                    'name': fields.Datetime.now(),
+                                    'statement_id': current_session.statement_ids[0].id}]],
+                'uid': ref,
+                'user_id': current_session.user_id.id,
+                'bus_id': main_pos_config.bus_id.id
+
+            },
+            'id': ref,
+            'to_invoice': False}
+
+        amount_total = 0
+        for line in order.get('order_line'):
+            product = request.env['product.product'].sudo().browse(line.get('product_id'))
+            amount_total += int(line.get('price_unit')) * int(line.get('quantity'))
+            line_item = [0, 0, {'discount': 0,
+                                'pack_lot_ids': [],
+                                'price_unit': line.get('price_unit'),
+                                'product_id': product.id,
+                                'qty': line.get('quantity'),
+                                'tax_ids': [(6, 0, product.taxes_id.ids)]
+                                }]
+            new_order['data']['lines'].append(line_item)
+        new_order['data']['amount_total'] = amount_total
+        new_order['data']['amount_paid'] = amount_total
+        new_order['data']['statement_ids'][0][2]['amount'] = amount_total
+        created_orders = request.env['pos.order'].sudo().sync_from_customer([new_order])

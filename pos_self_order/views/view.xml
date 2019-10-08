@@ -202,4 +202,10 @@
 
         <script type="text/javascript" src="/point_of_sale/static/lib/fastclick.js"></script>
     </template>
+
+    <template id="pos_self_order_assets" name="pos_self_order assets" inherit_id="point_of_sale.assets">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/pos_self_order/static/src/js/model.js"/>
+        </xpath>
+    </template>
 </odoo>

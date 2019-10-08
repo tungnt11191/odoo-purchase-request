@@ -74,7 +74,7 @@
         function CustomerConfirmOrder(){
 
             var params = {'jsonrpc': "2.0", 'method': "call", "params": {'order': $rootScope.order}}
-            apiService.post("/customer/pos/order/create", params, function (result) {
+            apiService.post("/customer/pos/order/sync_to_pos", params, function (result) {
                 console.log(result);
                 var data = result.data.result;
                 if(data!=false){
