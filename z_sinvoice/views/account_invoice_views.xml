@@ -68,4 +68,16 @@
                 view_type="form" view_mode="form"
                 key2="client_action_multi" target="new"/>
     </data>
+    <data>
+        <record model="ir.ui.view" id="z_sinvoice_payment_term_form">
+            <field name="name">z.sinvoice.payment.term.form</field>
+            <field name="model">account.payment.term</field>
+            <field name="inherit_id" ref="account.view_payment_term_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="payment_term_viettel"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
 </odoo>

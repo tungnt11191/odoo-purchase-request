@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import api, fields, models, tools
 import requests
 import json
 from odoo.exceptions import UserError, ValidationError
@@ -12,6 +12,7 @@ from datetime import date
 import werkzeug.utils
 import logging
 _logger = logging.getLogger(__name__)
+from odoo.addons import decimal_precision as dp
 
 class AccountInvoice(models.Model):
     _inherit = 'x.invoice.template'
@@ -78,13 +79,12 @@ class AccountInvoice(models.Model):
     #                           2 - dieu chinh thong tin
     @api.multi
     def generate_invoice_data(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
+        digits = dp.get_precision('Product Price')(self._cr)
         payment_method_name = "TM/CK"
 
         if invoice.payment_term_id:
-            if invoice.payment_term_id.x_check_cash_payment:
-                payment_method_name = "TM"
-            else:
-                payment_method_name = "TM/CK"
+            if invoice.payment_term_id.payment_term_viettel:
+                payment_method_name = invoice.payment_term_id.payment_term_viettel
         # buyer information
         buyer_name = invoice.x_purchase_person.name if invoice.x_purchase_person else ''
         buyer_legal_name = invoice.x_vat_partner if invoice.x_vat_partner else ''
@@ -104,9 +104,10 @@ class AccountInvoice(models.Model):
 
         buyer_bank_name = ""
         buyer_bank_account = ""
-        if invoice.partner_id and len(invoice.partner_id.bank_ids) > 0:
-            buyer_bank_name = invoice.partner_id.bank_ids[0].acc_number
-            buyer_bank_account = invoice.partner_id.bank_ids[0].acc_number
+        if invoice.partner_bank_id:
+            buyer_bank_account = invoice.partner_bank_id.acc_number
+            if invoice.partner_bank_id.bank_id:
+                buyer_bank_name = invoice.partner_bank_id.bank_id.name
         # buyer information
 
         # seller information
@@ -273,7 +274,7 @@ class AccountInvoice(models.Model):
                      # "itemName": (line.name if line.name else '') + (u'(Hàng khuyến mại không thu tiền)' if line.x_total_price == 0 else ''),
                      "itemName": (line.name if line.name else ''),
                      "unitName": line.uom_id.name if line.uom_id else '',
-                     "unitPrice": line.price_unit,
+                     "unitPrice": format(line.price_unit, '.4f'), # tools.float_round(line.price_unit, precision_digits=digits[1]),  # line.price_unit,
                      "quantity": line.quantity,
                      # "itemTotalAmountWithoutTax": line.x_functional_price_subtotal,
                      "itemTotalAmountWithoutTax": itemTotalAmountWithoutTax,
@@ -515,3 +516,9 @@ class ZinvoiceCreateSinvoiceLine(models.TransientModel):
         for line in self:
             record = self.env[line.model].browse(line.source_id)
             record.create_hddt()
+
+
+class ZAccountPaymentTerm(models.Model):
+    _inherit = 'account.payment.term'
+
+    payment_term_viettel = fields.Selection([('CK', 'CK'), ('DTCN', 'DTCN'), ('TM', 'TM'), ('TM/CK', 'TM/CK'), ('KHAC', 'KHAC')], string=u'Hình thức thanh toán Viettel', default='TM', required=True)
