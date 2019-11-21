@@ -19,8 +19,9 @@
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_confirm']" position="before">
-                    <button name="create_hddt" type="object" string="Tạo HĐĐT" confirm="Are you sure you?" attrs="{'invisible': ['|','|',('state', '!=', 'done'),('x_invoice_status', '=', 'status_created'),('x_able_to_sync', '=', False)]}"/>
-                    <button name="cancel_hddt" type="object" string="Hủy HĐĐT" confirm="Are you sure you?" attrs="{'invisible': [('x_invoice_status', 'in', ['status_not_sync','status_canceled'])]}"/>
+                    <button name="show_hddt_data" type="object" string="Show HĐĐT data" confirm="Are you sure you?"/>
+                    <button name="create_hddt" type="object" string="Tạo HĐĐT" confirm="Bạn có chắc chắn TẠO hóa đơn điện tử này không?" attrs="{'invisible': ['|','|',('state', '!=', 'done'),('x_invoice_status', '=', 'status_created'),('x_able_to_sync', '=', False)]}"/>
+                    <button name="cancel_hddt" type="object" string="Hủy HĐĐT" confirm="Bạn có chắc chắn HỦY không?" attrs="{'invisible': [('x_invoice_status', 'in', ['status_not_sync','status_canceled'])]}"/>
                 </xpath>
                 <xpath expr="//page[last()]" position="after">
                     <field name="x_invoice_type_hgdl" invisible="1"/>

@@ -11,6 +11,8 @@ from .constant import Constant
 from datetime import date
 import werkzeug.utils
 import logging
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+import pytz
 _logger = logging.getLogger(__name__)
 
 class StockPickingType(models.Model):
@@ -124,7 +126,7 @@ class StockPicking(models.Model):
     #                           2 - dieu chinh thong tin
     @api.multi
     def generate_invoice_data(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
-
+        tz = pytz.timezone(self.env.user.tz) or pytz.timezone('Asia/Ho_Chi_Minh')
         # transporter information
         # buyer_name = invoice.implemented_by_id.name if invoice.implemented_by_id else ''
         # if buyer_name == '':
@@ -375,7 +377,7 @@ class StockPicking(models.Model):
                         batchNoArray.append(move_line.lot_id.name)
                         batchNo += comma + (move_line.lot_id.name if move_line.lot_id else '')
 
-                    exp = move_line.lot_id.removal_date.strftime('%d-%m-%Y')
+                    exp = (pytz.utc.localize(move_line.lot_id.removal_date).astimezone(tz)).strftime('%d-%m-%Y')
                     if exp not in expDateArray:
                         expDateArray.append(exp)
                         expDate += comma + (exp if move_line.lot_id else '')
@@ -422,10 +424,13 @@ class StockPicking(models.Model):
             headers = {"Content-type": "application/json"}
             base64string = base64.b64encode(bytes(username + ':' + password, "utf-8"))
             headers['Authorization'] = "Basic %s" % base64string.decode("utf-8")
+
+            vat = invoice.company_id.vat if invoice.company_id.vat else self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.supplier_tax_code')
+
             if invoice.x_invoice_type_xknb:
-                url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_create_uri')
+                url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_create_uri') + vat
             elif invoice.x_invoice_type_hgdl:
-                url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_create_draft_uri')
+                url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_create_draft_uri') + vat
             data = {}
 
             # neu ton tai hoa don goc thi dieu chinh, neu khong thi tao moi
@@ -455,6 +460,14 @@ class StockPicking(models.Model):
                     invoice.write(values)
                     self.env.cr.commit()
 
+    @api.multi
+    def show_hddt_data(self):
+        user_obj = self.env.user
+        username = user_obj.x_sinvoice_username
+        for invoice in self:
+            data = self.generate_invoice_data(invoice=invoice, adjustment_type=1, username=username, adjustmentInvoiceType=0)
+            raise ValidationError(json.dumps(data))
+
 
     @api.multi
     def cancel_hddt(self):
@@ -474,8 +487,8 @@ class StockPicking(models.Model):
             canceled_sinvoice_datetime = datetime.strftime(datetime.now(), '%Y%m%d%H%M%S')
 
             url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_cancel_uri')
-            supplier_tax_code = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.supplier_tax_code')
 
+            supplier_tax_code = invoice.company_id.vat if invoice.company_id.vat else self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.supplier_tax_code')
             data = {
                     "supplierTaxCode": supplier_tax_code,
                     "invoiceNo": invoice.x_invoice_symbol+invoice.x_supplier_invoice_number,

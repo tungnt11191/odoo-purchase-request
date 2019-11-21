@@ -11,7 +11,7 @@
                     <div class="row mt16 o_settings_container">
                         <div class="col-xs-12 col-md-6 o_setting_box">
                             <div class="o_setting_right_pane">
-                                <label for="x_supplier_tax_code"/>
+                                <label for="x_supplier_tax_code" string="Default Supplier Tax Code"/>
                                 <div class="content-group">
                                     <div class="mt16">
                                         <field name="x_supplier_tax_code" class="o_light_label"/>

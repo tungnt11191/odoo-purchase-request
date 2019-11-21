@@ -13,6 +13,8 @@ import werkzeug.utils
 import logging
 _logger = logging.getLogger(__name__)
 from odoo.addons import decimal_precision as dp
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+import pytz
 
 class AccountInvoice(models.Model):
     _inherit = 'x.invoice.template'
@@ -79,6 +81,7 @@ class AccountInvoice(models.Model):
     #                           2 - dieu chinh thong tin
     @api.multi
     def generate_invoice_data(self, invoice, adjustment_type, username, adjustmentInvoiceType = 0, origin_invoice=None):
+        tz = pytz.timezone(self.env.user.tz) or pytz.timezone('Asia/Ho_Chi_Minh')
         digits = dp.get_precision('Product Price')(self._cr)
         payment_method_name = "TM/CK"
 
@@ -95,7 +98,7 @@ class AccountInvoice(models.Model):
         # buyer_city_name = invoice.partner_id.state_id.name if invoice.partner_id and invoice.partner_id.state_id else ''
         buyer_country_code = '84'
         # buyer_phone_number = invoice.partner_id.mobile if invoice.partner_id and invoice.partner_id.mobile else ''
-        # buyer_email = invoice.partner_id.email if invoice.partner_id and invoice.partner_id.email else ''
+        buyer_email = invoice.partner_id.email if invoice.partner_id and invoice.partner_id.email else ''
 
         buyer_id_no = "8888899999"  # so CMT
         buyer_id_type = "1"  #1 or 3
@@ -144,7 +147,7 @@ class AccountInvoice(models.Model):
                 # "buyerCountryCode": buyer_country_code,
                 # "buyerPhoneNumber": buyer_phone_number,
                 # "buyerFaxNumber": buyer_phone_number,
-                # "buyerEmail": buyer_email,
+                "buyerEmail": buyer_email,
                 "buyerBankName": buyer_bank_name,
                 "buyerBankAccount": buyer_bank_account,
                 # "buyerIdNo": buyer_id_no,
@@ -288,7 +291,7 @@ class AccountInvoice(models.Model):
                      "itemDiscount": line.total_amount_discount_line,
                      "itemNote": "",
                      "batchNo": line.x_lot_id.name if line.x_lot_id else '',
-                     "expDate": line.x_lot_id.removal_date.strftime('%d-%m-%Y ') if line.x_lot_id else '',
+                     "expDate": (pytz.utc.localize(line.x_lot_id.removal_date).astimezone(tz)).strftime('%d-%m-%Y') if line.x_lot_id else '',
                   }
 
             # get taxPercentage
@@ -384,7 +387,10 @@ class AccountInvoice(models.Model):
             # base64string = base64.encodebytes(str.encode('%s:%s' % (username, password)))
             base64string = base64.b64encode(bytes(username + ':' + password, "utf-8"))
             headers['Authorization'] = "Basic %s" % base64string.decode("utf-8")
-            url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_create_uri')
+
+            vat = invoice.company_id.vat if invoice.company_id.vat else self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.supplier_tax_code')
+
+            url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_create_uri') + vat
             data = {}
             if invoice.x_origin_invoice:
                 origin_invoice = self.env['account.invoice'].search([('supplier_invoice_number','=',invoice.x_origin_invoice)], order='id asc')
@@ -443,7 +449,7 @@ class AccountInvoice(models.Model):
             # result = requests.get(url, headers)
 
             url = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.sinvoice_cancel_uri')
-            supplier_tax_code = self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.supplier_tax_code')
+            supplier_tax_code = invoice.company_id.vat if invoice.company_id.vat else self.env['ir.config_parameter'].sudo().get_param('z_sinvoice_for_dap.supplier_tax_code')
             data = {
                     "supplierTaxCode": supplier_tax_code,
                     "invoiceNo": invoice.x_invoice_symbol+invoice.supplier_invoice_number,
@@ -461,9 +467,10 @@ class AccountInvoice(models.Model):
                     raise ValidationError(str(output['errorCode']) + ": " + str(output['description']))
                 else:
                     values = {
-                        'supplier_invoice_number': False,
-                        'x_transaction_id': False,
-                        'x_reservation_code': False,
+                        # http://jira.runsystem.info/browse/OA-793
+                        # 'supplier_invoice_number': False,
+                        # 'x_transaction_id': False,
+                        # 'x_reservation_code': False,
                         'x_invoice_status': 'status_canceled',
                         'x_canceled_sinvoice': datetime.now()
                     }
