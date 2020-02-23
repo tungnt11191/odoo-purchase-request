@@ -14,6 +14,7 @@ import logging
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import pytz
 _logger = logging.getLogger(__name__)
+from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 
 class StockPickingType(models.Model):
     _inherit = 'stock.picking.type'
@@ -349,7 +350,7 @@ class StockPicking(models.Model):
         sumOfTotalLineAmountWithoutTax = 0
         for line in invoice.move_ids_without_package:
             index += 1
-            itemTotalAmountWithoutTax = abs(round(line.price_unit * line.quantity_done))
+            itemTotalAmountWithoutTax = abs(float_round(line.price_unit * line.quantity_done, 0))
             sumOfTotalLineAmountWithoutTax += itemTotalAmountWithoutTax
             item = {
                         "lineNumber": index,

@@ -15,6 +15,7 @@ _logger = logging.getLogger(__name__)
 from odoo.addons import decimal_precision as dp
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import pytz
+from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 
 class AccountInvoice(models.Model):
     _inherit = 'x.invoice.template'
@@ -268,7 +269,7 @@ class AccountInvoice(models.Model):
         total_discount = 0
         for line in invoice.invoice_line_ids:
             index += 1
-            itemTotalAmountWithoutTax = round(line.price_unit * line.quantity)
+            itemTotalAmountWithoutTax = float_round(line.price_unit * line.quantity, 0)
             sumOfTotalLineAmountWithoutTax += itemTotalAmountWithoutTax
             total_discount += line.total_amount_discount_line
             item = {
@@ -281,11 +282,11 @@ class AccountInvoice(models.Model):
                      "quantity": line.quantity,
                      # "itemTotalAmountWithoutTax": line.x_functional_price_subtotal,
                      "itemTotalAmountWithoutTax": itemTotalAmountWithoutTax,
-                     "itemTotalAmountWithTax": round(line.x_total_price),
+                     "itemTotalAmountWithTax": float_round(line.x_total_price, 0),
                      # "itemTotalAmountAfterDiscount": itemTotalAmountWithoutTax - line.total_amount_discount_line,
                      'itemTotalAmountAfterDiscount': line.x_functional_price_subtotal,
-                     # "taxPercentage": round(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
-                     "taxAmount": round(line.x_rounding_price_tax),
+                     # "taxPercentage": float_round(line.x_rounding_price_tax / line.x_functional_price_subtotal * 100) if line.x_functional_price_subtotal > 0 else 0,
+                     "taxAmount": float_round(line.x_rounding_price_tax, 0),
                      "discount": line.discount,
                      "discount2": line.discount2,
                      "itemDiscount": line.total_amount_discount_line,
