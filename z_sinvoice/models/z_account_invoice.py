@@ -105,12 +105,12 @@ class AccountInvoice(models.Model):
         buyer_code = invoice.x_purchase_person.ref if invoice.x_purchase_person and invoice.x_purchase_person.ref else ''
         buyer_birthdate = invoice.partner_id.birthdate.strftime('%Y-%m-%d') if invoice.partner_id and invoice.partner_id.birthdate else ''
 
-        buyer_bank_name = ""
-        buyer_bank_account = ""
-        if invoice.partner_bank_id:
-            buyer_bank_account = invoice.partner_bank_id.acc_number
-            if invoice.partner_bank_id.bank_id:
-                buyer_bank_name = invoice.partner_bank_id.bank_id.name
+        buyer_bank_name = invoice.x_bank if invoice.x_bank else ''
+        buyer_bank_account = invoice.x_acc_number if invoice.x_acc_number else ''
+        # if invoice.partner_bank_id:
+        #     buyer_bank_account = invoice.partner_bank_id.acc_number
+        #     if invoice.partner_bank_id.bank_id:
+        #         buyer_bank_name = invoice.partner_bank_id.bank_id.name
         # buyer information
 
         # seller information
